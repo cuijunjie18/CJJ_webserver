@@ -10,10 +10,10 @@
 class ConnectionPool
 {
 public:
-    MYSQL *GetConnection();				 //获取数据库连接
-	bool ReleaseConnection(MYSQL *conn); //释放连接
-	int GetFreeConn();					 //获取连接
-	void DestroyPool();					 //销毁所有连接
+    MYSQL *GetConnection();				 // 获取数据库连接
+	bool ReleaseConnection(MYSQL *conn); // 释放连接
+	int GetFreeConn();					 // 获取可用连接数
+	void DestroyPool();					 // 销毁所有连接
 
 	//单例模式
 	static ConnectionPool *GetInstance();
@@ -48,7 +48,7 @@ public:
     std::string cp_passwd;
     int cp_port;
 
-    bool use_log; // 日志开关
+    bool cp_use_log; // 日志开关
 };
 
 class ConnectionRAII
