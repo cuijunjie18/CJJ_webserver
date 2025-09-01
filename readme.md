@@ -27,12 +27,15 @@
   
 - 2025.9.1
   - 完成线程池的搭建(未测试，大部分是copy from reference)
+  - 学习i/o多路复用的相关理论，了解LT、ET事件触发模式.
 
 
 ## 收获
 
 [线程同步](include/lock/readme.md)  
 [数据库连接池](include/CGImysql/readme.md)  
+[i/o多路复用](learning/Multiplexing/readme.md)  
+[事件触发模式](learning/trigger_mode/readme.md)  
 
 ## 参考
 
