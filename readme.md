@@ -13,7 +13,7 @@
 
 ## 环境配置
 
-[MySQL数据库配置](https://github.com/cuijunjie18/my_notebook/blob/master/mysql)
+[MySQL数据库配置](https://github.com/cuijunjie18/my_notebook/blob/master/mysql)  
 
 ## 开发日志
 
@@ -23,6 +23,11 @@
   
 - 2025.8.31
   - 完成数据库连接池搭建.(未添加日志系统、未测试)
+  - 加上数据库连接池到main，测试编译成功.
+  
+- 2025.9.1
+  - 完成线程池的搭建(未测试，大部分是copy from reference)
+
 
 ## 收获
 
