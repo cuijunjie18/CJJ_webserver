@@ -5,6 +5,8 @@
 #include <exception>
 #include <semaphore.h>
 
+/*下面的同步类里的bool型成员函数返回值均是代表调用是否成功.*/
+
 
 /*信号量封装实现*/
 class sem
