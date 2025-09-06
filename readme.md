@@ -28,6 +28,10 @@
 - 2025.9.1
   - 完成线程池的搭建(未测试，大部分是copy from reference)
   - 学习i/o多路复用的相关理论，了解LT、ET事件触发模式.
+  
+- 2025.9.6
+  - 修复线程池的实现，通过编译，检查线程数量符合预期.
+  - 完成日志系统中阻塞队列编写，未测试.
 
 
 ## 收获
@@ -36,6 +40,7 @@
 [数据库连接池](include/CGImysql/readme.md)  
 [i/o多路复用](learning/Multiplexing/readme.md)  
 [事件触发模式](learning/trigger_mode/readme.md)  
+[c++模板实现线程池](include/threadpool/readme.md)  
 
 ## 参考
 

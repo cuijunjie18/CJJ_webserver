@@ -36,10 +36,10 @@ target_link_libraries(main PRIVATE ${LIBMYSQLCLIENT_LIBRARIES})
 
 # =====================================================================
 
-# demo程序
-add_executable(
-    demo
-    ${SRC_DIR}/mysql_demo.cpp
-)
-target_include_directories(demo PRIVATE ${LIBMYSQLCLIENT_INCLUDE_DIRS})
-target_link_libraries(demo PRIVATE ${LIBMYSQLCLIENT_LIBRARIES})
+# # demo程序
+# add_executable(
+#     demo
+#     ${SRC_DIR}/mysql_demo.cpp
+# )
+# target_include_directories(demo PRIVATE ${LIBMYSQLCLIENT_INCLUDE_DIRS})
+# target_link_libraries(demo PRIVATE ${LIBMYSQLCLIENT_LIBRARIES})
