@@ -11,6 +11,7 @@ ConnectionPool::~ConnectionPool(){
     this->DestroyPool();
 }
 
+/*c++11后，使用局部变量懒汉不用加锁*/
 ConnectionPool* ConnectionPool::GetInstance(){
     static ConnectionPool conn_pool;
     return &conn_pool;

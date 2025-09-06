@@ -32,6 +32,7 @@
 - 2025.9.6
   - 修复线程池的实现，通过编译，检查线程数量符合预期.
   - 完成日志系统中阻塞队列编写，未测试.
+  - 完成整个日志系统的开发，未测试.
 
 
 ## 收获
@@ -41,6 +42,7 @@
 [i/o多路复用](learning/Multiplexing/readme.md)  
 [事件触发模式](learning/trigger_mode/readme.md)  
 [c++模板实现线程池](include/threadpool/readme.md)  
+[日志类实现](include/log/readme.md)  
 
 ## 参考
 
