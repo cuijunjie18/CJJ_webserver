@@ -82,7 +82,7 @@ bool Log::init(
 }
 
 void Log::write_log(int level, const char *format, ...){
-        struct timeval now = {0, 0};
+    struct timeval now = {0, 0};
     gettimeofday(&now, NULL);
     time_t t = now.tv_sec;
     struct tm *sys_tm = localtime(&t);
