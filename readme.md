@@ -38,7 +38,7 @@
 - 2025.9.9
   - 定时器组件编写完成.
   - 定时器添加了gtest,完成测试.如下
-  ![test_timer](assets/test_list.png)  
+  ![test_timer](assets/test_timer.png)  
 
 
 ## 收获
