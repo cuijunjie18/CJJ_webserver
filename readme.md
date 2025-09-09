@@ -35,6 +35,10 @@
   - 完成整个日志系统的开发，未测试.
 - 2025.9.7
   - 日志系统编译、测试通过.
+- 2025.9.9
+  - 定时器组件编写完成.
+  - 定时器添加了gtest,完成测试.如下
+  ![test_timer](assets/test_list.png)  
 
 
 ## 收获
@@ -50,4 +54,5 @@
 ## 参考
 
 baseline: https://github.com/qinguoyi/TinyWebServer.git  
-mysql_cmake: https://github.com/nryeng/hello-mysql-world
+mysql_cmake: https://github.com/nryeng/hello-mysql-world  
+GTest: https://zhuanlan.zhihu.com/p/693222066  
