@@ -1,11 +1,12 @@
 #ifndef LOG_HPP
 #define LOG_HPP
 
-#include <log/block_queue.hpp>
 #include <time.h>
 #include <sys/time.h>
 #include <stdio.h>
 #include <stdarg.h>
+
+#include "log/block_queue.hpp"
 
 class Log
 {

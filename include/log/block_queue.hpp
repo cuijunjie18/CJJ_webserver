@@ -2,9 +2,10 @@
 #define BLOCK_QUEUE_HPP
 
 #include <queue>
-#include <lock/locker.hpp>
 #include <string.h>
 #include <string>
+
+#include "lock/locker.hpp"
 
 class BlockQueue
 {

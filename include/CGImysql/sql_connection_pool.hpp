@@ -5,7 +5,8 @@
 #include <string>
 #include <string.h>
 #include <list>
-#include <lock/locker.hpp>
+
+#include "lock/locker.hpp"
 
 class ConnectionPool
 {

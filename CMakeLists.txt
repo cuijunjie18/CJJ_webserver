@@ -31,6 +31,7 @@ find_package(GTest REQUIRED)
 
 # 添加头文件
 include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR}/src)
 
 
 # 主程序
@@ -56,7 +57,7 @@ target_link_libraries(main PRIVATE ${LIBMYSQLCLIENT_LIBRARIES})
 # target_link_libraries(test PRIVATE ${LIBMYSQLCLIENT_LIBRARIES})
 
 
-
+# GTest 测试定时器
 add_executable(
     test_timer
     ${TEST_SRC}/test_timer.cpp

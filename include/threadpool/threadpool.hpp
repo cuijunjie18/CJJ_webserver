@@ -1,7 +1,8 @@
 #ifndef THREADPOOL_HPP
 #define THREADPOOL_HPP
 
-#include <CGImysql/sql_connection_pool.hpp>
+#include "CGImysql/sql_connection_pool.hpp"
+#include "common.hpp"
 
 template <typename T>
 class ThreadPool
@@ -134,7 +135,7 @@ void ThreadPool<T>::run(){
         if (!request) continue;
 
         // Reactor模式
-        if (m_actor_model == 1){
+        if (m_actor_model == Reactor__Mode){
             // 读
             if (request->m_state == 0){
                 if (request->read_once()){
@@ -155,7 +156,7 @@ void ThreadPool<T>::run(){
                 }
             }
         }
-        else{ // Proactor模式
+        else if (m_actor_model == Proactor_Mode){ // Proactor模式
             ConnectionRAII mysqlcon(&request->mysql, m_connPool);
             request->process();
         }
