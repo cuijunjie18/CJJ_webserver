@@ -21,8 +21,13 @@ set(TEST_SRC ${PROJECT_SOURCE_DIR}/test)
 # 第三方库
 
 # mysql使用
-include(FindPkgConfig)
-pkg_check_modules(LIBMYSQLCLIENT REQUIRED mysqlclient)
+# include(FindPkgConfig)
+# pkg_check_modules(LIBMYSQLCLIENT REQUIRED mysqlclient)
+
+find_library(LIBMYSQLCLIENT
+    NAMES mysqlclient
+    PATHS /usr/lib/x86_64-linux-gnu
+)
 
 # Gtest使用
 find_package(GTest REQUIRED)
@@ -41,8 +46,9 @@ add_executable(
     ${CGIMYSQL_SRC}/sql_connection_pool.cpp
     ${LOG_SRC}/log.cpp ${LOG_SRC}/block_queue.cpp
 )
-target_include_directories(main PRIVATE ${LIBMYSQLCLIENT_INCLUDE_DIRS})
-target_link_libraries(main PRIVATE ${LIBMYSQLCLIENT_LIBRARIES})
+# target_include_directories(main PRIVATE ${LIBMYSQLCLIENT_INCLUDE_DIRS})
+# target_link_libraries(main PRIVATE ${LIBMYSQLCLIENT_LIBRARIES})
+target_link_libraries(main PRIVATE ${LIBMYSQLCLIENT})
 
 
 # =================================================================

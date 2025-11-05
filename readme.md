@@ -53,8 +53,8 @@
 [事件触发模式](learning/trigger_mode/readme.md)  
 [c++模板实现线程池](include/threadpool/readme.md)  
 [日志类实现](include/log/readme.md)  
-[c++多态](learning/Polymorphism/readme.md)  
 [定时器](include/timer/readme.md)  
+[c++语法基础](learning/cpp_base/readme.md) 
 
 ## 参考
 
