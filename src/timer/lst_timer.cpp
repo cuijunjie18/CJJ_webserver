@@ -131,9 +131,9 @@ void Utils::addfd(int epollfd, int fd, bool one_shot, int TRIGMode){
     epoll_event event;
     event.data.fd = fd;
 
-    if (TRIGMode == 1)
+    if (TRIGMode == ET_TRIGMODE)
         event.events = EPOLLIN | EPOLLET | EPOLLRDHUP;
-    else
+    else if (TRIGMode == LT_TRIGMODE)
         event.events = EPOLLIN | EPOLLRDHUP;
 
     if (one_shot)
@@ -147,7 +147,7 @@ void Utils::sig_handler(int sig){
     //为保证函数的可重入性，保留原来的errno
     int save_errno = errno;
     int msg = sig;
-    send(u_pipefd[1], (char *)&msg, 1, 0);
+    send(u_pipefd[Write_End], (char *)&msg, 1, 0);
     errno = save_errno;
 }
 

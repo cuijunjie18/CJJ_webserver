@@ -137,7 +137,7 @@ void ThreadPool<T>::run(){
         // Reactor模式
         if (m_actor_model == Reactor__Mode){
             // 读
-            if (request->m_state == 0){
+            if (request->m_state == Read_State){
                 if (request->read_once()){
                     request->improv = 1;
                     ConnectionRAII mysqlcon(&request->mysql, m_connPool);
@@ -146,7 +146,7 @@ void ThreadPool<T>::run(){
                     request->improv = 1;
                     request->timer_flag = 1;
                 }
-            }else { // 写
+            }else if (request->m_state == Write_State){ // 写
                 if (request->write()){
                     request->improv = 1;
                 }

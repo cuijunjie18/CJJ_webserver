@@ -59,3 +59,10 @@ bool HttpConn::read_once(){
     }
 }
 
+HTTP_CODE HttpConn::process_read(){
+
+}
+
+void HttpConn::process(){
+    
+}

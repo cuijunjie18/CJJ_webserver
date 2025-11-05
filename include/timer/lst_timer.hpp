@@ -21,9 +21,10 @@
 #include <sys/wait.h>
 #include <sys/uio.h>
 #include <iostream>
-
 #include <time.h>
+
 #include "log/log.hpp"
+#include "common.hpp"
 
 class UtilTimer;
 
@@ -94,9 +95,9 @@ public:
     void show_error(int connfd, const char *info);
 
 public:
-    static int *u_pipefd;
-    SortTimerList m_timer_lst;
+    static int *u_pipefd; // 使用管道传递信号
     static int u_epollfd;
+    SortTimerList m_timer_lst;
     int m_TIMESLOT;
 };
 
