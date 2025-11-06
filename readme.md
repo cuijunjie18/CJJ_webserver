@@ -48,6 +48,9 @@
   - 添加部分c++学习笔记
   - 添加一些枚举类型代替常量，添加http代码框架，待TODO
 
+- 2025.11.6
+  - 记录一些有意义、优美的参考代码，在reference/下
+
 ## 收获
 
 [线程同步](include/lock/readme.md)  
@@ -57,7 +60,8 @@
 [c++模板实现线程池](include/threadpool/readme.md)  
 [日志类实现](include/log/readme.md)  
 [定时器](include/timer/readme.md)  
-[c++语法基础](learning/cpp_base/readme.md) 
+[c++语法基础](learning/cpp_base/readme.md)  
+[参考代码](reference/readme.md)  
 
 ## 参考
 
