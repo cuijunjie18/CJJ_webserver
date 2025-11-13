@@ -54,15 +54,19 @@
 - 2025.11.10
   - 添加一些c++文件操作相关内容
 
+- 2025.11.13
+  - 整改当前的目录结构，将include与src合并，增强阅读体验
+  - 添加build.sh中-DENABLE_UT_TEST=OFF，是否指定测试
+
 ## 收获
 
-[线程同步](include/lock/readme.md)  
-[数据库连接池](include/CGImysql/readme.md)  
+[线程同步](src/lock/readme.md)  
+[数据库连接池](src/CGImysql/readme.md)  
 [i/o多路复用](learning/Multiplexing/readme.md)  
 [事件触发模式](learning/trigger_mode/readme.md)  
-[c++模板实现线程池](include/threadpool/readme.md)  
-[日志类实现](include/log/readme.md)  
-[定时器](include/timer/readme.md)  
+[c++模板实现线程池](src/threadpool/readme.md)  
+[日志类实现](src/log/readme.md)  
+[定时器](src/timer/readme.md)  
 [c++语法基础](learning/cpp_base/readme.md)  
 [参考代码](reference/readme.md)  
 

@@ -2,7 +2,7 @@
 #define THREADPOOL_HPP
 
 #include "CGImysql/sql_connection_pool.hpp"
-#include "common.hpp"
+#include "utils/common.hpp"
 
 template <typename T>
 class ThreadPool

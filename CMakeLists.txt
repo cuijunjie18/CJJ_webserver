@@ -29,13 +29,9 @@ find_library(LIBMYSQLCLIENT
     PATHS /usr/lib/x86_64-linux-gnu
 )
 
-# Gtest使用
-find_package(GTest REQUIRED)
-
 # ===================================================
 
 # 添加头文件
-include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
 
@@ -51,28 +47,7 @@ add_executable(
 target_link_libraries(main PRIVATE ${LIBMYSQLCLIENT})
 
 
-# =================================================================
-# 测试程序
-# add_executable(
-#     test
-#     ${TEST_SRC}/test.cpp
-#     ${CGIMYSQL_SRC}/sql_connection_pool.cpp
-#     ${LOG_SRC}/log.cpp ${LOG_SRC}/block_queue.cpp
-# )
-# target_include_directories(test PRIVATE ${LIBMYSQLCLIENT_INCLUDE_DIRS})
-# target_link_libraries(test PRIVATE ${LIBMYSQLCLIENT_LIBRARIES})
-
-
-# GTest 测试定时器
-add_executable(
-    test_timer
-    ${TEST_SRC}/test_timer.cpp
-    ${TIMER_SRC}/lst_timer.cpp  
-)
-target_link_libraries(
-    test_timer
-    PRIVATE
-    GTest::GTest
-)
-
-# =====================================================================
+# 是否启用测试
+if (ENABLE_UT_TEST)
+  add_subdirectory(test)
+endif()
