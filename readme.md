@@ -1,5 +1,9 @@
 # CJJ-WebSever
 
+## 风格描述
+
+目前的c++代码风格是偏向于C语言风格，较多使用POSIX接口
+
 ## 基本组件
 
 - 线程同步包装类.
@@ -13,7 +17,33 @@
 
 ## 环境配置
 
-[MySQL数据库配置](https://github.com/cuijunjie18/my_notebook/blob/master/mysql)  
+- 数据库配置验证
+  - [MySQL数据库安装](https://github.com/cuijunjie18/my_notebook/blob/master/mysql)  
+
+  运行服务器前配置webdev
+  ```shell
+  # 进入root
+  mysql
+  create database user_info_db; # 创建数据库
+  create user 'webdev'@'localhost' identified by   '12345678'; # 创建webdev用户
+  grant all privileges on user_info_db.* to   webdev@localhost; # 赋予权限
+  flush privileges;
+  exit; # 退出
+  
+  # 进入webdev
+  mysql -h localhost -u webdev -p
+  use user_info_db;
+  
+  # 创建user表
+  USE user_info_db;
+  CREATE TABLE user(
+      username char(50) NULL,
+      passwd char(50) NULL
+  )ENGINE=InnoDB;
+  
+  # 插入第一个测试数据
+  INSERT INTO user(username, passwd) VALUES('manager','1234');
+  ```
 
 ## 开发日志
 
@@ -57,6 +87,7 @@
 - 2025.11.13
   - 整改当前的目录结构，将include与src合并，增强阅读体验
   - 添加build.sh中-DENABLE_UT_TEST=OFF，是否指定测试
+  - 添加部分测试用例
 
 ## 收获
 

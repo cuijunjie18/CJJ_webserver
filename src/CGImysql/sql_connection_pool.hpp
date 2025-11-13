@@ -14,12 +14,16 @@ public:
     MYSQL *GetConnection();				 // 获取数据库连接
 	bool ReleaseConnection(MYSQL *conn); // 释放连接
 	int GetFreeConn();					 // 获取可用连接数
-	void DestroyPool();					 // 销毁所有连接
+	bool DestroyPool();					 // 销毁所有连接
 
 	//单例模式
-	static ConnectionPool *GetInstance();
+	static ConnectionPool& GetInstance(){
+        // c++11后，使用局部变量懒汉不用加锁
+        static ConnectionPool conn_pool;
+        return conn_pool;
+    }
 
-	void init(std::string url, 
+	bool init(std::string url, 
             std::string User, 
             std::string PassWord, 
             std::string DataBaseName, 

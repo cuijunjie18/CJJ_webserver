@@ -14,10 +14,10 @@ int main(int argc,char *argv[]) {
     mysql_options(&mysql, MYSQL_SET_CHARSET_NAME, "gbk");
     
     //连接数据库
-    if (mysql_real_connect(&mysql, "127.0.0.1", "cjj",
+    if (mysql_real_connect(&mysql, "127.0.0.1", "webdev",
         //"password", "database_name"分别填写自己的的数据库登录密码和表所在的数据库名称
         //这里替换成自己的的数据库等路密码和自己所建的数据库名称即可
-        "12345678", "demo", 3306, NULL, 0) == NULL) {
+        "12345678", "user_info_db", 3306, NULL, 0) == NULL) {
         
         printf("错误原因： %s\n", mysql_error(&mysql));
         printf("连接失败！\n");
@@ -25,7 +25,7 @@ int main(int argc,char *argv[]) {
     }
     
     //查询数据
-    int ret = mysql_query(&mysql, "select * from person;");
+    int ret = mysql_query(&mysql, "select * from user;");
     printf("ret: %d\n", ret);
     
     //获取结果集

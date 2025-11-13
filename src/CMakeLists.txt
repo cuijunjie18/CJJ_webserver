@@ -1,7 +1,6 @@
-find_package(GTest REQUIRED)
-set (EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../bin/test)
-
-set (TEST_SRC ${CMAKE_CURRENT_SOURCE_DIR})
+# 设置cmake变量
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+# message(WARNING "SRC_DIR = ${SRC_DIR}")
 
 # =================================================================================
 # mysql使用
@@ -23,23 +22,20 @@ else()
 endif()
 # ==================================================================================
 
-
-# sql_connection
+# 主程序
 add_executable(
-    test_sql_connection_pool
-    ${TEST_SRC}/CGImysql/test_sql_connection_pool.cpp
-    ${SRC_DIR}/CGImysql/sql_connection_pool.cpp 
+    main
+    ${SRC_DIR}/main.cpp
+    ${SRC_DIR}/CGImysql/sql_connection_pool.cpp
+    ${SRC_DIR}/log/log.cpp ${SRC_DIR}/log/block_queue.cpp
 )
-target_link_libraries(test_sql_connection_pool PRIVATE 
-    GTest::GTest
-    ${LIBMYSQLCLIENT_LIBRARIES}
-)
+target_include_directories(main PRIVATE ${LIBMYSQLCLIENT_INCLUDE_DIRS})
+target_link_libraries(main PRIVATE ${LIBMYSQLCLIENT_LIBRARIES})
 
-# # threadpool(未完成的demo版)
-# add_executable(
-#     test_threadpool
-#     ${TEST_SRC}/threadpool/test_threadpool.cpp
-# )
-# target_link_libraries(test_threadpool PRIVATE 
-#     GTest::GTest
-# )
+# mysql_demo程序
+add_executable(
+    mysql_demo
+    ${SRC_DIR}/mysql_demo.cpp
+)
+target_include_directories(mysql_demo PRIVATE ${LIBMYSQLCLIENT_INCLUDE_DIRS})
+target_link_libraries(mysql_demo PRIVATE ${LIBMYSQLCLIENT_LIBRARIES})

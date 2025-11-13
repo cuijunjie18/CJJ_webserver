@@ -67,10 +67,9 @@ ThreadPool<T>::ThreadPool(
     }
 }
 
-// 释放线程ppid
+// 释放线程pthread_t资源
 template <typename T>
-ThreadPool<T>::~ThreadPool()
-{
+ThreadPool<T>::~ThreadPool(){
     delete[] m_threads;
 }
 
@@ -135,7 +134,7 @@ void ThreadPool<T>::run(){
         if (!request) continue;
 
         // Reactor模式
-        if (m_actor_model == Reactor__Mode){
+        if (m_actor_model == Reactor_Mode){
             // 读
             if (request->m_state == Read_State){
                 if (request->read_once()){

@@ -11,14 +11,8 @@ ConnectionPool::~ConnectionPool(){
     this->DestroyPool();
 }
 
-/*c++11后，使用局部变量懒汉不用加锁*/
-ConnectionPool* ConnectionPool::GetInstance(){
-    static ConnectionPool conn_pool;
-    return &conn_pool;
-}
-
 // 数据库连接池资源初始化
-void ConnectionPool::init(
+bool ConnectionPool::init(
     std::string url, 
     std::string User, 
     std::string PassWord, 
@@ -38,8 +32,8 @@ void ConnectionPool::init(
 
         temp = mysql_init(temp);
         if (temp == nullptr){
-            std::cerr << "Failed to init mysql!" << std::endl;
-            exit(1);
+            std::cerr << "Failed to init a mysql!" << std::endl;
+            return false;
         }
 
         temp = mysql_real_connect(
@@ -54,13 +48,14 @@ void ConnectionPool::init(
             );
         if (temp == nullptr){
             std::cerr << "Failed to connect mysql!" << std::endl;
-            exit(1);
+            return false;
         }
 
         conn_list.push_back(temp);
         free_conn++;
     }
     reserve = sem(max_conn);
+    return true;
 }
 
 // 当有请求时，从数据库连接池中返回一个可用连接，更新使用和空闲连接数
@@ -101,7 +96,7 @@ int ConnectionPool::GetFreeConn(){
     return this->free_conn;
 }
 
-void ConnectionPool::DestroyPool(){
+bool ConnectionPool::DestroyPool(){
     lock.lock();
 
     if (conn_list.size() > 0){
@@ -116,6 +111,7 @@ void ConnectionPool::DestroyPool(){
     }
 
     lock.unlock();
+    return true;
 }
 
 ConnectionRAII::ConnectionRAII(MYSQL **con, ConnectionPool *connPool){
