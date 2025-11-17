@@ -5,14 +5,19 @@
 #include <sys/time.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <iostream>
 
-#include "log/block_queue.hpp"
+#include "utils/common.hpp"
+#include "logger/block_queue.hpp"
 
-class Log
+class Logger
 {
 public:
-    //C++11以后,使用局部变量懒汉不用加锁
-    static Log *GetInstance();
+    // C++11以后,使用局部变量懒汉不用加锁
+    static Logger& GetInstance(){
+        static Logger instacne;
+        return instacne;
+    }
 
     static void *flush_log_thread(void *args);
     //可选择的参数有日志文件、日志缓冲区大小、最大行数以及最长日志条队列
@@ -28,8 +33,8 @@ public:
     void flush(void);
 
 private:
-    Log();
-    virtual ~Log();
+    Logger();
+    virtual ~Logger();
     void *async_write_log();
 
 private:
@@ -47,9 +52,9 @@ private:
     int m_close_log; //关闭日志
 };
 
-#define LOG_DEBUG(format, ...) if(0 == m_close_log) {Log::GetInstance()->write_log(0, format, ##__VA_ARGS__); Log::GetInstance()->flush();}
-#define LOG_INFO(format, ...) if(0 == m_close_log) {Log::GetInstance()->write_log(1, format, ##__VA_ARGS__); Log::GetInstance()->flush();}
-#define LOG_WARN(format, ...) if(0 == m_close_log) {Log::GetInstance()->write_log(2, format, ##__VA_ARGS__); Log::GetInstance()->flush();}
-#define LOG_ERROR(format, ...) if(0 == m_close_log) {Log::GetInstance()->write_log(3, format, ##__VA_ARGS__); Log::GetInstance()->flush();}
+#define LOG_DEBUG(format, ...) if(0 == m_close_log) {Log::GetInstance().write_log(0, format, ##__VA_ARGS__); Log::GetInstance().flush();}
+#define LOG_INFO(format, ...) if(0 == m_close_log) {Log::GetInstance().write_log(1, format, ##__VA_ARGS__); Log::GetInstance().flush();}
+#define LOG_WARN(format, ...) if(0 == m_close_log) {Log::GetInstance().write_log(2, format, ##__VA_ARGS__); Log::GetInstance().flush();}
+#define LOG_ERROR(format, ...) if(0 == m_close_log) {Log::GetInstance().write_log(3, format, ##__VA_ARGS__); Log::GetInstance().flush();}
 
 #endif

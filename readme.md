@@ -89,6 +89,9 @@
   - 添加build.sh中-DENABLE_UT_TEST=OFF，是否指定测试
   - 添加部分测试用例
 
+- 2025.11.17
+  - 修复logger，添加对应的测试用例
+
 ## 收获
 
 [线程同步](src/lock/readme.md)  

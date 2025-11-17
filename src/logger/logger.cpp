@@ -1,11 +1,12 @@
-#include <log/log.hpp>
+#include <logger/logger.hpp>
+#include <pthread.h>
 
-Log::Log(){
+Logger::Logger(){
     m_count = 0;
     m_is_async = false; // 默认同步记录
 }
 
-Log::~Log(){
+Logger::~Logger(){
     if (m_fp != NULL){
         fclose(m_fp);
     }
@@ -13,17 +14,12 @@ Log::~Log(){
     delete [] m_buf;
 }
 
-// C++11以后,使用局部变量懒汉不用加锁
-Log* Log::GetInstance(){
-    static Log instacne;
-    return &instacne;
+void* Logger::flush_log_thread(void *args){
+    pthread_detach(pthread_self()); // 设置detach属性，线程结束后自动释放资源
+    return Logger::GetInstance().async_write_log();
 }
 
-void* Log::flush_log_thread(void *args){
-    Log::GetInstance()->async_write_log();
-}
-
-bool Log::init(
+bool Logger::init(
     const char *file_name, // 日志文件
     int close_log, // 是否开启日志
     int log_buf_size, // 日志缓冲区大小
@@ -81,7 +77,7 @@ bool Log::init(
     return true;
 }
 
-void Log::write_log(int level, const char *format, ...){
+void Logger::write_log(int level, const char *format, ...){
     struct timeval now = {0, 0};
     gettimeofday(&now, NULL);
     time_t t = now.tv_sec;
@@ -90,16 +86,16 @@ void Log::write_log(int level, const char *format, ...){
     char s[16] = {0};
     switch (level)
     {
-    case 0:
+    case DEBUG:
         strcpy(s, "[debug]:");
         break;
-    case 1:
+    case INFO:
         strcpy(s, "[info]:");
         break;
-    case 2:
+    case WARN:
         strcpy(s, "[warn]:");
         break;
-    case 3:
+    case ERROR:
         strcpy(s, "[erro]:");
         break;
     default:
@@ -164,13 +160,13 @@ void Log::write_log(int level, const char *format, ...){
     va_end(valst);
 }
 
-void Log::flush(){
+void Logger::flush(){
     m_mutex.lock();
     fflush(m_fp); // 强制刷新写入流缓冲区
     m_mutex.unlock();
 }
 
-void* Log::async_write_log(){
+void* Logger::async_write_log(){
     std::string single_log;
     //从阻塞队列中取出一个日志string，写入文件
     while (m_log_queue->pop(single_log))
@@ -179,4 +175,5 @@ void* Log::async_write_log(){
         fputs(single_log.c_str(), m_fp);
         m_mutex.unlock();
     }
+    return nullptr;
 }

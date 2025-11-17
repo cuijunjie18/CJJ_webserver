@@ -35,6 +35,16 @@ target_link_libraries(test_sql_connection_pool PRIVATE
     ${LIBMYSQLCLIENT_LIBRARIES}
 )
 
+# logger
+add_executable(
+    test_logger
+    ${TEST_SRC}/logger/test_logger.cpp
+    ${SRC_DIR}/logger/logger.cpp ${SRC_DIR}/logger/block_queue.cpp
+)
+target_link_libraries(test_logger PRIVATE 
+    GTest::GTest
+)
+
 # # threadpool(未完成的demo版)
 # add_executable(
 #     test_threadpool

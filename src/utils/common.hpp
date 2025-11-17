@@ -19,6 +19,14 @@ enum HttpRequestState{
     Write_State = 1,
 };
 
+// 日志等级
+enum LogLevel{
+    DEBUG = 0,
+    INFO = 1,
+    WARN = 2,
+    ERROR = 3,
+};
+
 // 管道的写入与读入端
 enum PipeEnd{
     Read_End = 0,
