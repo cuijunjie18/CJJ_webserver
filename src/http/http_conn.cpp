@@ -1,5 +1,8 @@
 #include <http/http_conn.hpp>
 
+// 静态类成员变量初始化
+int HttpConn::m_epollfd = -1;
+int HttpConn::m_user_count = -1;
 
 void HttpConn::init(){
     mysql = nullptr;
@@ -24,6 +27,24 @@ void HttpConn::init(){
     memset(m_read_buf, '\0', READ_BUFFER_SIZE);
     memset(m_write_buf, '\0', WRITE_BUFFER_SIZE);
     memset(m_real_file, '\0', FILENAME_LEN);
+}
+
+void HttpConn::init(int sockfd, 
+    const sockaddr_in &addr, 
+    char* root, int TRIGMode, int close_log, 
+    std::string user, 
+    std::string passwd, 
+    std::string sqlname)
+{
+    m_sockfd = sockfd;
+    m_address = addr;
+
+    doc_root = root;
+    m_TRIGMode = TRIGMode;
+    m_close_log = close_log;
+
+    addfd(m_epollfd, m_sockfd, false, m_TRIGMode);
+
 }
 
 bool HttpConn::read_once(){

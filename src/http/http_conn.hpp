@@ -27,6 +27,7 @@
 #include "timer/lst_timer.hpp"
 #include "logger/logger.hpp"
 #include "utils/common.hpp"
+#include "utils/epoll_utils.hpp"
 
 // 请求方法
 enum METHOD {

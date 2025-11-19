@@ -26,8 +26,12 @@ endif()
 add_executable(
     main
     ${SRC_DIR}/main.cpp
+    ${SRC_DIR}/webserver.cpp
     ${SRC_DIR}/CGImysql/sql_connection_pool.cpp
-    ${SRC_DIR}/logger/logger.cpp ${SRC_DIR}/logger/block_queue.cpp
+    ${SRC_DIR}/logger/logger.cpp 
+    ${SRC_DIR}/logger/block_queue.cpp
+    ${SRC_DIR}/timer/lst_timer.cpp
+    ${SRC_DIR}/http/http_conn.cpp
 )
 target_include_directories(main PRIVATE ${LIBMYSQLCLIENT_INCLUDE_DIRS})
 target_link_libraries(main PRIVATE ${LIBMYSQLCLIENT_LIBRARIES})

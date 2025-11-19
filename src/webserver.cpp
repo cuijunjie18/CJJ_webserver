@@ -29,7 +29,8 @@ WebServer::~WebServer() {
     delete m_pool;
 }
 
-void WebServer::init(int port, 
+void WebServer::init(
+    int port, 
     std::string user, 
     std::string passWord, 
     std::string databaseName, 
@@ -58,14 +59,14 @@ void WebServer::init(int port,
 }
 
 void WebServer::sql_pool() {
-    m_connPool = &ConnectionPool::GetInstance();
-    m_connPool->init("localhost", m_user, m_passWord, m_databaseName, m_sql_port, m_sql_num, m_close_log);
+    // m_connPool = &ConnectionPool::GetInstance();
+    // m_connPool->init("localhost", m_user, m_passWord, m_databaseName, m_sql_port, m_sql_num, m_close_log);
 
-    users->initmysql_result(m_connPool);
+    // users->initmysql_result(m_connPool);
 }
 
 void WebServer::thread_pool() {
-    m_pool = new ThreadPool<HttpConn>(m_actormodel, m_connPool, m_thread_num);
+    // m_pool = new ThreadPool<HttpConn>(m_actormodel, m_connPool, m_thread_num);
 }
 
 void WebServer::log_write() {
@@ -119,6 +120,7 @@ void WebServer::eventListen() {
         fprintf(stderr, "Listen error!\n");
         return;
     }
+    utils.init(TIMESLOT);
 
     // 创建内核事件表
     epoll_event events[MAX_EVENT_NUMBER];
@@ -144,7 +146,7 @@ void WebServer::eventListen() {
 }
 
 void WebServer::timer(int connfd, struct sockaddr_in client_address) {
-
+    // users[connfd].init();
 }
 
 void WebServer::adjust_timer(UtilTimer *timer) {
@@ -172,5 +174,5 @@ bool WebServer::dealwithsignal(bool& timeout, bool& stop_server) {
 }
 
 void WebServer::eventLoop() {
-
+    
 }

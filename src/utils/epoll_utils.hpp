@@ -1,7 +1,16 @@
-#include <http/http_conn.hpp>
+#ifndef EPOLL_UTILS_HPP
+#define EPOLL_UTILS_HPP
+
+#include <fcntl.h>
+#include <sys/epoll.h>
+#include <unistd.h>
+
+/*
+cpp禁止在头文件中定义函数，使用inline避免编译错误
+*/
 
 //对文件描述符设置非阻塞
-int setnonblocking(int fd){
+inline int setnonblocking(int fd){
     int old_option = fcntl(fd, F_GETFL);
     int new_option = old_option | O_NONBLOCK;
     fcntl(fd, F_SETFL, new_option);
@@ -9,7 +18,7 @@ int setnonblocking(int fd){
 }
 
 //将内核事件表注册读事件，ET模式，选择开启EPOLLONESHOT
-void addfd(int epollfd, int fd, bool one_shot, int TRIGMode){
+inline void addfd(int epollfd, int fd, bool one_shot, int TRIGMode){
     epoll_event event;
     event.data.fd = fd;
 
@@ -25,13 +34,13 @@ void addfd(int epollfd, int fd, bool one_shot, int TRIGMode){
 }
 
 //从内核时间表删除描述符
-void removefd(int epollfd, int fd){
+inline void removefd(int epollfd, int fd){
     epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, 0);
     close(fd);
 }
 
 //将事件重置为EPOLLONESHOT
-void modfd(int epollfd, int fd, int ev, int TRIGMode){
+inline void modfd(int epollfd, int fd, int ev, int TRIGMode){
     epoll_event event;
     event.data.fd = fd;
 
@@ -42,3 +51,5 @@ void modfd(int epollfd, int fd, int ev, int TRIGMode){
 
     epoll_ctl(epollfd, EPOLL_CTL_MOD, fd, &event); // EPOLL_CTL_MOD为更新fd的监听状态
 }
+
+#endif
