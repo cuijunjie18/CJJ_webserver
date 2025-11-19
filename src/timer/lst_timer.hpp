@@ -23,7 +23,7 @@
 #include <iostream>
 #include <time.h>
 
-#include "log/log.hpp"
+#include "logger/logger.hpp"
 #include "utils/common.hpp"
 
 class UtilTimer;

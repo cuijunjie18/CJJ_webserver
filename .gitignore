@@ -5,3 +5,6 @@ build
 # executable file
 demo
 bin
+
+# tmp
+git_cjj.sh

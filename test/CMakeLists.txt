@@ -53,3 +53,13 @@ target_link_libraries(test_logger PRIVATE
 # target_link_libraries(test_threadpool PRIVATE 
 #     GTest::GTest
 # )
+
+# timer
+add_executable(
+    test_timer
+    ${TEST_SRC}/timer/test_timer.cpp
+    ${SRC_DIR}/timer/lst_timer.cpp
+)
+target_link_libraries(test_timer PRIVATE 
+    GTest::GTest
+)
