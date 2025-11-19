@@ -1,12 +1,6 @@
 #include "threadpool/threadpool.hpp"
+#include "http/http_conn.hpp"
 #include <gtest/gtest.h>
-
-class DemoTask {
-public:
-    void execute() {
-        std::cout << "Hello from DummyTask!" << std::endl;
-    }
-};
 
 class ThreadPoolTest : public testing::Test {
 public:
@@ -21,7 +15,7 @@ public:
         delete pool;
     }
 public:
-    ThreadPool<DemoTask>* pool;
+    ThreadPool<HttpConn>* pool;
     int actor_model;
     ConnectionPool *connPool; 
     int thread_number; 
@@ -30,7 +24,7 @@ public:
 
 TEST_F(ThreadPoolTest, BuildThreadPool) {
     EXPECT_NO_THROW({
-        pool = new ThreadPool<DemoTask>(actor_model, connPool, thread_number, max_requests);
+        pool = new ThreadPool<HttpConn>(actor_model, connPool, thread_number, max_requests);
     });
     ASSERT_NE(pool, nullptr);
     delete pool;

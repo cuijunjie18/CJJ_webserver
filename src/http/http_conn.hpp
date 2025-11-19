@@ -25,11 +25,11 @@
 #include "lock/locker.hpp"
 #include "CGImysql/sql_connection_pool.hpp"
 #include "timer/lst_timer.hpp"
-#include "log/log.hpp"
-#include "common.hpp"
+#include "logger/logger.hpp"
+#include "utils/common.hpp"
 
-enum METHOD
-{
+// 请求方法
+enum METHOD {
     GET = 0,
     POST,
     HEAD,
@@ -41,24 +41,9 @@ enum METHOD
     PATH
 };
 
-// 主状态机状态
-enum CHECK_STATE
-{
-    CHECK_STATE_REQUESTLINE = 0,
-    CHECK_STATE_HEADER,
-    CHECK_STATE_CONTENT
-};
-// 从状态机的状态
-enum LINE_STATUS
-{
-    LINE_OK = 0,
-    LINE_BAD,
-    LINE_OPEN
-};
-
-enum HTTP_CODE
-{
-    NO_REQUEST,
+// 响应状态码
+enum HTTP_CODE {
+    NO_REQUEST = 0,
     GET_REQUEST,
     BAD_REQUEST,
     NO_RESOURCE,
@@ -66,6 +51,19 @@ enum HTTP_CODE
     FILE_REQUEST,
     INTERNAL_ERROR,
     CLOSED_CONNECTION
+};
+
+// 主状态机状态
+enum CHECK_STATE {
+    CHECK_STATE_REQUESTLINE = 0,
+    CHECK_STATE_HEADER,
+    CHECK_STATE_CONTENT
+};
+// 从状态机的状态
+enum LINE_STATUS {
+    LINE_OK = 0,
+    LINE_BAD,
+    LINE_OPEN
 };
 
 class HttpConn

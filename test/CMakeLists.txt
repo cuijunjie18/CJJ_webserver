@@ -49,6 +49,7 @@ target_link_libraries(test_logger PRIVATE
 # add_executable(
 #     test_threadpool
 #     ${TEST_SRC}/threadpool/test_threadpool.cpp
+#     ${SRC_DIR}/http/http_conn.cpp
 # )
 # target_link_libraries(test_threadpool PRIVATE 
 #     GTest::GTest

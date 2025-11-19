@@ -27,10 +27,28 @@ enum LogLevel{
     ERROR = 3,
 };
 
+// 日志关闭
+enum LogClose{
+    Log_Open = 0,
+    Log_Close = 1,
+};
+
+// 日志同步异步
+enum LogWriteMode{
+    Log_Sync = 0,
+    Log_Async = 1,
+};
+
 // 管道的写入与读入端
 enum PipeEnd{
     Read_End = 0,
     Write_End = 1,
+};
+
+// 监听socket的优雅关闭选项
+enum OptLinger{
+    Linger_Close = 0,
+    Linger_Open = 1,
 };
 
 #endif

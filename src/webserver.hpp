@@ -12,10 +12,12 @@
 #include <cassert>
 #include <sys/epoll.h>
 
-#include <CGImysql/sql_connection_pool.hpp>
-#include <http/http_conn.hpp>
-#include <threadpool/threadpool.hpp>
-#include <timer/lst_timer.hpp>
+#include "CGImysql/sql_connection_pool.hpp"
+#include "http/http_conn.hpp"
+#include "threadpool/threadpool.hpp"
+#include "timer/lst_timer.hpp"
+#include "logger/logger.hpp"
+#include "utils/common.hpp"
 
 const int MAX_FD = 65536;           //最大文件描述符
 const int MAX_EVENT_NUMBER = 10000; //最大事件数
@@ -28,15 +30,15 @@ public:
     ~WebServer();
 
     void init(int port , std::string user, std::string passWord, std::string databaseName,
-              int log_write , int opt_linger, int trigmode, int sql_num,
-              int thread_num, int close_log, int actor_model);
+              int log_write , int opt_linger, int listen_trig_mode, int conn_trig_mode,
+              int sql_num, int thread_num, int close_log, int actor_model);
 
     void thread_pool();
     void sql_pool();
     void log_write();
-    void trig_mode();
     void eventListen();
     void eventLoop();
+    void set_signal_handler();
     void timer(int connfd, struct sockaddr_in client_address);
     void adjust_timer(UtilTimer *timer);
     void deal_timer(UtilTimer *timer, int sockfd);
@@ -63,7 +65,8 @@ public:
     std::string m_passWord;     //登陆数据库密码
     std::string m_databaseName; //使用数据库名
     int m_sql_num;
-
+    int m_sql_port = 3306;  // 目前数据库的端口不重要，直接初始化
+ 
     //线程池相关
     ThreadPool<HttpConn> *m_pool;
     int m_thread_num;
@@ -72,10 +75,9 @@ public:
     epoll_event events[MAX_EVENT_NUMBER];
 
     int m_listenfd;
-    int m_OPT_LINGER;
-    int m_TRIGMode;
-    int m_LISTENTrigmode;
-    int m_CONNTrigmode;
+    int m_optlinger;
+    int m_listen_trig_mode;
+    int m_conn_trig_mode;
 
     //定时器相关
     client_data *users_timer;
