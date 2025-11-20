@@ -1,4 +1,4 @@
-#include <timer/lst_timer.hpp>
+#include "timer/lst_timer.hpp"
 
 /*SortTimerList类定义*/
 SortTimerList::SortTimerList() : head(nullptr), tail(nullptr) {}
@@ -175,13 +175,4 @@ void Utils::show_error(int connfd, const char *info){
 
 int *Utils::u_pipefd = 0;
 int Utils::u_epollfd = 0;
-
-
-// 回调函数
-void cb_func(client_data *user_data){
-    epoll_ctl(Utils::u_epollfd, EPOLL_CTL_DEL, user_data->sockfd, 0);
-    assert(user_data);
-    close(user_data->sockfd);
-    // http_conn::m_user_count--; // 关闭一个连接，客户总量-1
-}
 

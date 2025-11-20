@@ -58,15 +58,46 @@ void WebServer::init(
     m_actormodel = actor_model;
 }
 
-void WebServer::sql_pool() {
-    // m_connPool = &ConnectionPool::GetInstance();
-    // m_connPool->init("localhost", m_user, m_passWord, m_databaseName, m_sql_port, m_sql_num, m_close_log);
+void WebServer::initmysql_result(ConnectionPool *connPool) {
+    //先从连接池中取一个连接
+    MYSQL *mysql = nullptr;
+    ConnectionRAII mysqlcon(&mysql, connPool);
 
-    // users->initmysql_result(m_connPool);
+    //在user表中检索username，passwd数据，浏览器端输入
+    if (mysql_query(mysql, "SELECT username,passwd FROM user"))
+    {
+        LOG_ERROR("SELECT error:%s\n", mysql_error(mysql));
+    }
+
+    //从表中检索完整的结果集
+    MYSQL_RES *result = mysql_store_result(mysql);
+
+    //从结果集中获取下一行，将对应的用户名和密码，存入map中
+    while (MYSQL_ROW row = mysql_fetch_row(result))
+    {
+        std::string temp1(row[0]);
+        std::string temp2(row[1]);
+        users_info[temp1] = temp2;
+    }
+}
+
+void WebServer::show_users_info() {
+    std::cout << "Users info" << std::endl;
+    for (auto user_info : users_info) {
+        std::cout << user_info.first << " " << user_info.second << std::endl;
+    }
+    return;
+}
+
+void WebServer::sql_pool() {
+    m_connPool = &ConnectionPool::GetInstance();
+    m_connPool->init("localhost", m_user, m_passWord, m_databaseName, m_sql_port, m_sql_num, m_close_log);
+
+    initmysql_result(m_connPool);
 }
 
 void WebServer::thread_pool() {
-    // m_pool = new ThreadPool<HttpConn>(m_actormodel, m_connPool, m_thread_num);
+    m_pool = new ThreadPool<HttpConn>(m_actormodel, m_connPool, m_thread_num);
 }
 
 void WebServer::log_write() {
@@ -86,7 +117,7 @@ void WebServer::log_write() {
     }
 }
 
-void WebServer::set_signal_handler(){
+void WebServer::set_signal_handler() {
     utils.addsig(SIGPIPE, SIG_IGN);
     utils.addsig(SIGALRM, utils.sig_handler, false);
     utils.addsig(SIGTERM, utils.sig_handler, false);
@@ -146,19 +177,69 @@ void WebServer::eventListen() {
 }
 
 void WebServer::timer(int connfd, struct sockaddr_in client_address) {
-    // users[connfd].init();
+    users[connfd].init(connfd, client_address, m_root, 
+        m_conn_trig_mode, m_close_log,
+        m_user, m_passWord, m_databaseName);
+    
+    // 初始化client_data数据
+    // 创建定时器，设置回调函数和超时时间，绑定用户数据，将定时器添加到链表中
+    users_timer[connfd].address = client_address;
+    users_timer[connfd].sockfd = connfd;
+    UtilTimer *timer = new UtilTimer;
+    timer->user_data = &users_timer[connfd];
+    timer->cb_func = cb_func;
+    time_t cur = time(NULL);
+    timer->expire = cur + 3 * TIMESLOT;
+    users_timer[connfd].timer = timer;
+    utils.m_timer_lst.add_timer(timer);
 }
 
+// 若有数据传输，则将定时器往后延迟3个单位
 void WebServer::adjust_timer(UtilTimer *timer) {
-
+    time_t cur = time(NULL);
+    timer->expire = cur + 3 * TIMESLOT;
+    utils.m_timer_lst.adjust_timer(timer);
 }
 
+// 超时处理
 void WebServer::deal_timer(UtilTimer *timer, int sockfd) {
-
+    timer->cb_func(&users_timer[sockfd]);
+    utils.m_timer_lst.del_timer(timer);
 }
 
+// 读事件处理
 void WebServer::dealwithread(int sockfd) {
+    UtilTimer *timer = users_timer[sockfd].timer;
 
+    // reactor
+    if (m_actormodel == Reactor_Mode) {
+        adjust_timer(timer);
+
+        // 若监测到读事件，将该事件放入请求队列
+        m_pool->append(users + sockfd, Read_State);
+
+        while (true) {
+            if (users[sockfd].improv == Event_Finish) {
+                if (1 == users[sockfd].timer_flag) {
+                    deal_timer(timer, sockfd);
+                    users[sockfd].timer_flag = 0;
+                }
+                users[sockfd].improv = Event_Processing;
+                break;
+            }
+        }
+    } else { // proactor
+        if (users[sockfd].read_once()) {
+            LOG_INFO("deal with the client(%s)", inet_ntoa(users[sockfd].get_address()->sin_addr));
+
+            // 若监测到读事件，将该事件放入请求队列
+            m_pool->append_p(users + sockfd);
+            adjust_timer(timer);
+        }
+        else {
+            deal_timer(timer, sockfd);
+        }
+    }
 }
 
 void WebServer::dealwithwrite(int sockfd) {

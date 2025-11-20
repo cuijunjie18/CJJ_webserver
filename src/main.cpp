@@ -30,10 +30,11 @@ int main(int argc,char *argv[])
     server.log_write();
 
     //数据库
-    // server.sql_pool();
+    server.sql_pool();
+    // server.show_users_info();
 
     //线程池
-    // server.thread_pool();
+    server.thread_pool();
 
     //监听
     // server.eventListen();

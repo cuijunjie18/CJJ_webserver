@@ -21,11 +21,11 @@
 #include <sys/wait.h>
 #include <sys/uio.h>
 #include <map>
+#include <atomic>
 
-#include "lock/locker.hpp"
 #include "CGImysql/sql_connection_pool.hpp"
-#include "timer/lst_timer.hpp"
 #include "logger/logger.hpp"
+#include "timer/lst_timer.hpp"
 #include "utils/common.hpp"
 #include "utils/epoll_utils.hpp"
 
@@ -93,9 +93,8 @@ public:
     {
         return &m_address;
     }
-    void initmysql_result(ConnectionPool *connPool);
-    int timer_flag;
-    int improv;
+    int timer_flag; // 定时器是否删除
+    int improv; // 任务完成标记
 
 
 private:
@@ -120,7 +119,7 @@ private:
 
 public:
     static int m_epollfd;
-    static int m_user_count;
+    static std::atomic<int> m_user_count; // 原子操作，线程安全
     MYSQL *mysql;
     int m_state;  //读为0, 写为1
 
@@ -159,5 +158,7 @@ private:
     char sql_passwd[100];
     char sql_name[100];
 };
+
+void cb_func(client_data *user_data); // 定时器回调函数
 
 #endif

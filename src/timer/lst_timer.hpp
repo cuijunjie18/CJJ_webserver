@@ -101,6 +101,4 @@ public:
     int m_TIMESLOT;
 };
 
-void cb_func(client_data *user_data); // 回调函数
-
 #endif

@@ -138,19 +138,19 @@ void ThreadPool<T>::run(){
             // 读
             if (request->m_state == Read_State){
                 if (request->read_once()){
-                    request->improv = 1;
+                    request->improv = Event_Finish;
                     ConnectionRAII mysqlcon(&request->mysql, m_connPool);
                     request->process();
                 }else{
-                    request->improv = 1;
+                    request->improv = Event_Finish;
                     request->timer_flag = 1;
                 }
             }else if (request->m_state == Write_State){ // 写
                 if (request->write()){
-                    request->improv = 1;
+                    request->improv = Event_Finish;
                 }
                 else{
-                    request->improv = 1;
+                    request->improv = Event_Finish;
                     request->timer_flag = 1;
                 }
             }

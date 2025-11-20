@@ -13,6 +13,12 @@ enum EventProcessMode{
     Reactor_Mode = 1,
 };
 
+// 事件完成情况
+enum EventProcessState{
+    Event_Processing = 0,
+    Event_Finish = 1,
+};
+
 // http请求的状态
 enum HttpRequestState{
     Read_State = 0,

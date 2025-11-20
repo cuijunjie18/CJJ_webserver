@@ -33,8 +33,12 @@ public:
               int log_write , int opt_linger, int listen_trig_mode, int conn_trig_mode,
               int sql_num, int thread_num, int close_log, int actor_model);
 
-    void thread_pool();
+    // 数据库
     void sql_pool();
+    void initmysql_result(ConnectionPool *connPool);
+    void show_users_info();
+
+    void thread_pool();
     void log_write();
     void eventListen();
     void eventLoop();
@@ -66,6 +70,7 @@ public:
     std::string m_databaseName; //使用数据库名
     int m_sql_num;
     int m_sql_port = 3306;  // 目前数据库的端口不重要，直接初始化
+    std::map<std::string,std::string> users_info; // 数据库中用户的数据
  
     //线程池相关
     ThreadPool<HttpConn> *m_pool;
