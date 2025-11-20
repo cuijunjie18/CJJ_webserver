@@ -12,7 +12,9 @@ public:
     }
 
     void TearDown() override {
-        delete pool;
+        if (pool) {
+            delete pool;
+        }
     }
 public:
     ThreadPool<HttpConn>* pool;
@@ -27,7 +29,9 @@ TEST_F(ThreadPoolTest, BuildThreadPool) {
         pool = new ThreadPool<HttpConn>(actor_model, connPool, thread_number, max_requests);
     });
     ASSERT_NE(pool, nullptr);
+    
     delete pool;
+    pool = nullptr;
 }
 
 int main(int argc, char *argv[])

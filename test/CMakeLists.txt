@@ -45,15 +45,18 @@ target_link_libraries(test_logger PRIVATE
     GTest::GTest
 )
 
-# # threadpool(未完成的demo版)
-# add_executable(
-#     test_threadpool
-#     ${TEST_SRC}/threadpool/test_threadpool.cpp
-#     ${SRC_DIR}/http/http_conn.cpp
-# )
-# target_link_libraries(test_threadpool PRIVATE 
-#     GTest::GTest
-# )
+# threadpool(未完成的demo版)
+add_executable(
+    test_threadpool
+    ${TEST_SRC}/threadpool/test_threadpool.cpp
+    ${SRC_DIR}/http/http_conn.cpp
+    ${SRC_DIR}/CGImysql/sql_connection_pool.cpp 
+    ${SRC_DIR}/timer/lst_timer.cpp
+)
+target_link_libraries(test_threadpool PRIVATE 
+    GTest::GTest
+    ${LIBMYSQLCLIENT_LIBRARIES}
+)
 
 # timer
 add_executable(

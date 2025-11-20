@@ -37,9 +37,9 @@ int main(int argc,char *argv[])
     server.thread_pool();
 
     //监听
-    // server.eventListen();
+    server.eventListen();
 
     //运行
-    // server.eventLoop();
+    server.eventLoop();
     return 0;
 }
