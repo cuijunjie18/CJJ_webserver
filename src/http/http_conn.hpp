@@ -44,7 +44,7 @@ enum METHOD {
 
 // 响应状态码
 enum HTTP_CODE {
-    NO_REQUEST = 0,
+    NO_REQUEST = 0, // 请求不完整
     GET_REQUEST,
     BAD_REQUEST,
     NO_RESOURCE,
@@ -56,15 +56,15 @@ enum HTTP_CODE {
 
 // 主状态机状态
 enum CHECK_STATE {
-    CHECK_STATE_REQUESTLINE = 0,
-    CHECK_STATE_HEADER,
-    CHECK_STATE_CONTENT
+    CHECK_STATE_REQUESTLINE = 0, // 请求行
+    CHECK_STATE_HEADER, // 请求头
+    CHECK_STATE_CONTENT // 请求主体
 };
 // 从状态机的状态
 enum LINE_STATUS {
     LINE_OK = 0,
     LINE_BAD,
-    LINE_OPEN
+    LINE_OPEN   // 行不完整
 };
 
 class HttpConn
@@ -93,7 +93,7 @@ public:
     {
         return &m_address;
     }
-    int timer_flag; // 定时器是否删除
+    int timer_flag; // 定时器是否需要删除
     int improv; // 任务完成标记
 
 
@@ -126,26 +126,35 @@ public:
 private:
     int m_sockfd;
     sockaddr_in m_address;
+
+    // 读缓存区
     char m_read_buf[READ_BUFFER_SIZE];
-    long m_read_idx;
-    long m_checked_idx;
-    int m_start_line;
+    long m_read_idx; // m_read_buf中下一个读取的位置
+    long m_checked_idx; //用于解析字符串的下标
+    int m_start_line; // 某行开始位置
+
+    // 写缓存区
     char m_write_buf[WRITE_BUFFER_SIZE];
     int m_write_idx;
+
+    // 主从状态机
     CHECK_STATE m_check_state;
     METHOD m_method;
-    char m_real_file[FILENAME_LEN];
+
+    // 以下为解析请求报文中对应的6个变量
+    char m_real_file[FILENAME_LEN]; // 存储读取文件的名称
     char *m_url;
     char *m_version;
     char *m_host;
     long m_content_length;
-    bool m_linger;
+    bool m_linger; // 连接是否持久
+
     char *m_file_address;
     struct stat m_file_stat;
     struct iovec m_iv[2];
     int m_iv_count;
-    int cgi;        //是否启用的POST
-    char *m_string; //存储请求头数据
+    int cgi;        // 是否启用的POST
+    char *m_string; // 存储请求头数据
     int bytes_to_send;
     int bytes_have_send;
     char *doc_root;
@@ -154,6 +163,7 @@ private:
     int m_TRIGMode;
     int m_close_log;
 
+    // sql相关
     char sql_user[100];
     char sql_passwd[100];
     char sql_name[100];

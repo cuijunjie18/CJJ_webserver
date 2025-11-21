@@ -53,3 +53,7 @@
   - 进一步完善webserver的实现
   - 修复编译链接问题，lst_timer.cpp中的cb_func无法识别HttpConn::m_user_count，将cb_func移动到http_conn.cpp中
   - 完成webserver的实现，待实现http主从状态机
+
+- 2025.11.21
+  - 搭建HttpConn类的整体框架，待补充细节
+  - 优化src/cmakelists.txt的架构

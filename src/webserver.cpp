@@ -307,13 +307,11 @@ bool WebServer::dealclientdata() {
     else { // ET触发一次读完
         while (true) {
             int connfd = accept(m_listenfd, (struct sockaddr *)&client_address, &client_addrlength);
-            if (connfd < 0)
-            {
+            if (connfd < 0) {
                 LOG_ERROR("%s:errno is:%d", "accept error", errno);
                 break;
             }
-            if (HttpConn::m_user_count >= MAX_FD)
-            {
+            if (HttpConn::m_user_count >= MAX_FD) {
                 utils.show_error(connfd, "Internal server busy");
                 LOG_ERROR("%s", "Internal server busy");
                 break;

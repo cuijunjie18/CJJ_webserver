@@ -23,12 +23,11 @@ else()
 endif()
 # ==================================================================================
 
-
 # sql_connection
 add_executable(
     test_sql_connection_pool
     ${TEST_SRC}/CGImysql/test_sql_connection_pool.cpp
-    ${SRC_DIR}/CGImysql/sql_connection_pool.cpp 
+    ${CGImysql_src}
 )
 target_link_libraries(test_sql_connection_pool PRIVATE 
     GTest::GTest
@@ -39,19 +38,20 @@ target_link_libraries(test_sql_connection_pool PRIVATE
 add_executable(
     test_logger
     ${TEST_SRC}/logger/test_logger.cpp
-    ${SRC_DIR}/logger/logger.cpp ${SRC_DIR}/logger/block_queue.cpp
+    ${logger_src}
 )
 target_link_libraries(test_logger PRIVATE 
     GTest::GTest
 )
 
-# threadpool(未完成的demo版)
+# threadpool
 add_executable(
     test_threadpool
     ${TEST_SRC}/threadpool/test_threadpool.cpp
-    ${SRC_DIR}/http/http_conn.cpp
-    ${SRC_DIR}/CGImysql/sql_connection_pool.cpp 
-    ${SRC_DIR}/timer/lst_timer.cpp
+    ${http_src}
+    ${CGImysql_src}
+    ${logger_src}
+    ${timer_src}
 )
 target_link_libraries(test_threadpool PRIVATE 
     GTest::GTest
@@ -62,8 +62,22 @@ target_link_libraries(test_threadpool PRIVATE
 add_executable(
     test_timer
     ${TEST_SRC}/timer/test_timer.cpp
-    ${SRC_DIR}/timer/lst_timer.cpp
+    ${timer_src}
 )
 target_link_libraries(test_timer PRIVATE 
     GTest::GTest
+)
+
+# http
+add_executable(
+    test_http_conn
+    ${TEST_SRC}/http/test_http_conn.cpp
+    ${CGImysql_src}
+    ${http_src}
+    ${timer_src}
+    ${logger_src}
+)
+target_link_libraries(test_http_conn PRIVATE 
+    GTest::GTest
+    ${LIBMYSQLCLIENT_LIBRARIES}
 )

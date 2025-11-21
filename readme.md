@@ -50,12 +50,18 @@
 
 [开发日志](develop_log.md)  
 
+## 后续规划
+
+- [ ] 完善单元测试
+- [ ] 提高webserver的并发度
+
 ## 收获
 
 [线程同步](src/lock/readme.md)  
 [数据库连接池](src/CGImysql/readme.md)  
 [i/o多路复用](learning/Multiplexing/readme.md)  
 [事件触发模式](learning/trigger_mode/readme.md)  
+[事件处理模式](learning/Event_handler_mode/readme.md)  
 [c++模板实现线程池](src/threadpool/readme.md)  
 [日志类实现](src/log/readme.md)  
 [定时器](src/timer/readme.md)  
