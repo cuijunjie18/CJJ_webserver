@@ -126,10 +126,10 @@ HTTP_CODE HttpConn::do_request() {
     // int len = strlen(doc_root);
     // const char *p = strrchr(m_url, '/');
 
-    // //处理cgi
+    // // 处理cgi
     // if (cgi == 1 && (*(p + 1) == '2' || *(p + 1) == '3')) {
 
-    //     //根据标志判断是登录检测还是注册检测
+    //     // 根据标志判断是登录检测还是注册检测
     //     char flag = m_url[1];
 
     //     char *m_url_real = (char *)malloc(sizeof(char) * 200);
@@ -138,8 +138,8 @@ HTTP_CODE HttpConn::do_request() {
     //     strncpy(m_real_file + len, m_url_real, FILENAME_LEN - len - 1);
     //     free(m_url_real);
 
-    //     //将用户名和密码提取出来
-    //     //user=123&passwd=123
+    //     //  将用户名和密码提取出来
+    //     //  user=123&passwd=123
     //     char name[100], password[100];
     //     int i;
     //     for (i = 5; m_string[i] != '&'; ++i)

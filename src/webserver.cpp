@@ -7,6 +7,7 @@
 WebServer::WebServer() {
     //http_conn类对象
     users = new HttpConn[MAX_FD];
+    active_user_fds.clear();
 
     //root文件夹路径
     char server_path[200];
@@ -162,7 +163,6 @@ void WebServer::eventListen() {
     utils.init(TIMESLOT);
 
     // 创建内核事件表
-    epoll_event events[MAX_EVENT_NUMBER];
     m_epollfd = epoll_create(5);
     if (m_epollfd < 0){
         fprintf(stderr, "Epoll create error!\n");
@@ -302,6 +302,7 @@ bool WebServer::dealclientdata() {
             return false;
         }
         timer(connfd, client_address);
+        active_user_fds.insert(connfd);
     }
 
     else { // ET触发一次读完
@@ -317,9 +318,11 @@ bool WebServer::dealclientdata() {
                 break;
             }
             timer(connfd, client_address);
+            active_user_fds.insert(connfd);
         }
         return false;
     }
+    show_connection();
     return true;
 }
 
@@ -350,6 +353,8 @@ bool WebServer::dealwithsignal(bool& timeout, bool& stop_server) {
 
 // Webserver主循环
 void WebServer::eventLoop() {
+    LOG_INFO("Server run on port: %d",m_port);
+
     bool timeout = false;
     bool stop_server = false;
 

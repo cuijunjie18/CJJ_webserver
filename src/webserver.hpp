@@ -51,6 +51,17 @@ public:
     void dealwithread(int sockfd);
     void dealwithwrite(int sockfd);
 
+    // 查看当前连接的ip
+    void show_connection() {
+        LOG_INFO("Current user nums: %d",active_user_fds.size());
+        for (auto user_fd : active_user_fds) {
+            std::string user_ip;
+            sockaddr_in user_addr = users_timer[user_fd].address;
+            (void)inet_ntop(user_addr.sin_family, &user_addr.sin_addr, &user_ip[0], sizeof(user_addr));
+            LOG_INFO("user_ip: %s",user_ip.c_str());
+        }
+    }
+
 public:
     //基础
     int m_port;
@@ -62,6 +73,7 @@ public:
     int m_pipefd[2];
     int m_epollfd;
     HttpConn *users;
+    std::set<int> active_user_fds; // 活跃的连接文件描述符
 
     // 数据库相关
     ConnectionPool *m_connPool;

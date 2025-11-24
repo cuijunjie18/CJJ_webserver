@@ -107,7 +107,7 @@ HTTP_CODE HttpConn::parse_headers(char *text) {
 HTTP_CODE HttpConn::parse_content(char *text) {
     if (m_read_idx >= (m_content_length + m_checked_idx)) {
         text[m_content_length] = '\0';
-        //POST请求中最后为输入的用户名和密码
+        // POST请求中最后为输入的用户名和密码
         m_string = text;
         return GET_REQUEST;
     }

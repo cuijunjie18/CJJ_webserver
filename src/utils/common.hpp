@@ -1,6 +1,8 @@
 #ifndef COMMON_HPP
 #define COMMON_HPP
 
+#include <set>
+
 // 事件触发模式
 enum EventTriggerMode{
     LT_TRIGMODE = 0,
