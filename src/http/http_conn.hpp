@@ -24,6 +24,7 @@
 #include <atomic>
 
 #include "CGImysql/sql_connection_pool.hpp"
+#include "lock/locker.hpp"
 #include "logger/logger.hpp"
 #include "timer/lst_timer.hpp"
 #include "utils/common.hpp"
@@ -121,7 +122,9 @@ public:
     static int m_epollfd;
     static std::atomic<int> m_user_count; // 原子操作，线程安全
     MYSQL *mysql;
-    int m_state;  //读为0, 写为1
+    int m_state;  // 读为0, 写为1
+    static std::map<std::string,std::string> users_info; // 数据库中用户的数据
+    static locker m_lock; // 用户操作锁
 
 private:
     int m_sockfd;
@@ -149,17 +152,16 @@ private:
     long m_content_length;
     bool m_linger; // 连接是否持久
 
-    char *m_file_address;
-    struct stat m_file_stat;
+    char *m_file_address; // 文件使用mmap映射到内存的地址
+    struct stat m_file_stat; // 文件属性
     struct iovec m_iv[2];
     int m_iv_count;
-    int cgi;        // 是否启用的POST
+    bool cgi;        // 是否启用的POST
     char *m_string; // 存储请求头数据
     int bytes_to_send;
     int bytes_have_send;
-    char *doc_root;
-
-    std::map<std::string, std::string> m_users;
+    char *doc_root; // 根目录
+    
     int m_TRIGMode;
     int m_close_log;
 

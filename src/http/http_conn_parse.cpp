@@ -40,7 +40,7 @@ HTTP_CODE HttpConn::parse_request_line(char *text) {
         m_method = GET;
     }else if (strcasecmp(method, "POST") == 0) {
         m_method = POST;
-        cgi = 1;
+        cgi = true;
     }else {
         return BAD_REQUEST;
     }

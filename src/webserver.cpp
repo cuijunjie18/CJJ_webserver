@@ -80,14 +80,14 @@ void WebServer::initmysql_result(ConnectionPool *connPool) {
     {
         std::string temp1(row[0]);
         std::string temp2(row[1]);
-        users_info[temp1] = temp2;
+        HttpConn::users_info[temp1] = temp2;
     }
 }
 
 // 打印当前数据库中注册的用户数据
 void WebServer::show_users_info() {
     std::cout << "Users info" << std::endl;
-    for (auto user_info : users_info) {
+    for (auto user_info : HttpConn::users_info) {
         std::cout << user_info.first << " " << user_info.second << std::endl;
     }
     return;
@@ -232,7 +232,7 @@ void WebServer::dealwithread(int sockfd) {
 
         while (true) {
             if (users[sockfd].improv == Event_Finish) {
-                if (1 == users[sockfd].timer_flag) {
+                if (users[sockfd].timer_flag == TimerDestroy) {
                     deal_timer(timer, sockfd);
                     users[sockfd].timer_flag = 0;
                 }
@@ -267,7 +267,7 @@ void WebServer::dealwithwrite(int sockfd) {
 
         while (true) {
             if (users[sockfd].improv == Event_Finish) {
-                if (1 == users[sockfd].timer_flag) {
+                if (users[sockfd].timer_flag == TimerRemain) {
                     deal_timer(timer, sockfd);
                     users[sockfd].timer_flag = 0;
                 }
@@ -322,7 +322,6 @@ bool WebServer::dealclientdata() {
         }
         return false;
     }
-    show_connection();
     return true;
 }
 

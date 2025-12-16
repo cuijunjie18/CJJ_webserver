@@ -59,4 +59,10 @@ enum OptLinger{
     Linger_Open = 1,
 };
 
+// 是否销毁定时器
+enum TimerState{
+    TimerDestroy = 0,
+    TimerRemain = 1,
+};
+
 #endif

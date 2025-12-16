@@ -3,6 +3,8 @@
 // 静态类成员变量初始化
 int HttpConn::m_epollfd{-1};
 std::atomic<int> HttpConn::m_user_count{0};
+std::map<std::string,std::string> HttpConn::users_info{};
+locker HttpConn::m_lock;
 
 //定义http响应的一些状态信息
 const char *ok_200_title = "OK";
@@ -38,7 +40,7 @@ void HttpConn::init() {
     m_checked_idx = 0;
     m_read_idx = 0;
     m_write_idx = 0;
-    cgi = 0;
+    cgi = false;
     m_state = Read_State;
     timer_flag = 0;
     improv = Event_Processing;
@@ -72,9 +74,9 @@ void HttpConn::init(int sockfd,
     init();
 }
 
+// 关闭连接
 void HttpConn::close_conn(bool real_close) {
-    if (real_close && (m_sockfd != -1))
-    {
+    if (real_close && (m_sockfd != -1)) {
         printf("close %d\n", m_sockfd);
         removefd(m_epollfd, m_sockfd);
         m_sockfd = -1;
@@ -116,135 +118,171 @@ bool HttpConn::read_once() {
     }
 }
 
+// 解除文件在内存中的映射
+void HttpConn::unmap() {
+    if (m_file_address) {
+        munmap(m_file_address, m_file_stat.st_size);
+        m_file_address = nullptr;
+    }
+}
+
 bool HttpConn::write() {
-    
+    int temp = 0;
+
+    if (bytes_to_send == 0) {
+        modfd(m_epollfd, m_sockfd, EPOLLIN, m_TRIGMode);
+        init();
+        return true;
+    }
+
+    while (true) {
+        temp = writev(m_sockfd, m_iv, m_iv_count);
+
+        if (temp < 0) {
+            if (errno == EAGAIN) {
+                modfd(m_epollfd, m_sockfd, EPOLLOUT, m_TRIGMode);
+                return true;
+            }
+            unmap();
+            return false;
+        }
+
+        bytes_have_send += temp;
+        bytes_to_send -= temp;
+        if (bytes_have_send >= m_iv[0].iov_len) {
+            m_iv[0].iov_len = 0;
+            m_iv[1].iov_base = m_file_address + (bytes_have_send - m_write_idx);
+            m_iv[1].iov_len = bytes_to_send;
+        }else {
+            m_iv[0].iov_base = m_write_buf + bytes_have_send;
+            m_iv[0].iov_len = m_iv[0].iov_len - bytes_have_send;
+        }
+
+        if (bytes_to_send <= 0) {
+            unmap();
+            modfd(m_epollfd, m_sockfd, EPOLLIN, m_TRIGMode);
+
+            if (m_linger) {
+                init();
+                return true;
+            }else {
+                return false;
+            }
+        }
+    }
 }
 
 // 处理请求
 HTTP_CODE HttpConn::do_request() {
-    // strcpy(m_real_file, doc_root);
-    // int len = strlen(doc_root);
-    // const char *p = strrchr(m_url, '/');
+    strcpy(m_real_file, doc_root);
+    int len = strlen(doc_root);
+    const char *p = strrchr(m_url, '/');
 
-    // // 处理cgi
-    // if (cgi == 1 && (*(p + 1) == '2' || *(p + 1) == '3')) {
+    // 处理cgi
+    if (cgi == true && (*(p + 1) == '2' || *(p + 1) == '3')) {
 
-    //     // 根据标志判断是登录检测还是注册检测
-    //     char flag = m_url[1];
+        // 根据标志判断是登录检测还是注册检测
+        char flag = m_url[1];
 
-    //     char *m_url_real = (char *)malloc(sizeof(char) * 200);
-    //     strcpy(m_url_real, "/");
-    //     strcat(m_url_real, m_url + 2);
-    //     strncpy(m_real_file + len, m_url_real, FILENAME_LEN - len - 1);
-    //     free(m_url_real);
+        char *m_url_real = (char *)malloc(sizeof(char) * 200);
+        strcpy(m_url_real, "/");
+        strcat(m_url_real, m_url + 2);
+        strncpy(m_real_file + len, m_url_real, FILENAME_LEN - len - 1);
+        free(m_url_real);
 
-    //     //  将用户名和密码提取出来
-    //     //  user=123&passwd=123
-    //     char name[100], password[100];
-    //     int i;
-    //     for (i = 5; m_string[i] != '&'; ++i)
-    //         name[i - 5] = m_string[i];
-    //     name[i - 5] = '\0';
+        // 将用户名和密码提取出来
+        // 示例参数：user=123&passwd=123
+        char name[100], password[100];
+        int i;
+        for (i = 5; m_string[i] != '&'; ++i)
+            name[i - 5] = m_string[i];
+        name[i - 5] = '\0';
 
-    //     int j = 0;
-    //     for (i = i + 10; m_string[i] != '\0'; ++i, ++j)
-    //         password[j] = m_string[i];
-    //     password[j] = '\0';
+        int j = 0;
+        for (i = i + 10; m_string[i] != '\0'; ++i, ++j)
+            password[j] = m_string[i];
+        password[j] = '\0';
 
-    //     if (*(p + 1) == '3')
-    //     {
-    //         //如果是注册，先检测数据库中是否有重名的
-    //         //没有重名的，进行增加数据
-    //         char *sql_insert = (char *)malloc(sizeof(char) * 200);
-    //         strcpy(sql_insert, "INSERT INTO user(username, passwd) VALUES(");
-    //         strcat(sql_insert, "'");
-    //         strcat(sql_insert, name);
-    //         strcat(sql_insert, "', '");
-    //         strcat(sql_insert, password);
-    //         strcat(sql_insert, "')");
+        if (*(p + 1) == '3') {
+            //  如果是注册，先检测数据库中是否有重名的
+            //  没有重名的，进行增加数据
+            char *sql_insert = (char *)malloc(sizeof(char) * 200);
+            strcpy(sql_insert, "INSERT INTO user(username, passwd) VALUES(");
+            strcat(sql_insert, "'");
+            strcat(sql_insert, name);
+            strcat(sql_insert, "', '");
+            strcat(sql_insert, password);
+            strcat(sql_insert, "')");
 
-    //         if (users.find(name) == users.end())
-    //         {
-    //             m_lock.lock();
-    //             int res = mysql_query(mysql, sql_insert);
-    //             users.insert(pair<string, string>(name, password));
-    //             m_lock.unlock();
+            if (users_info.find(name) == users_info.end()) {
+                m_lock.lock();
+                int res = mysql_query(mysql, sql_insert);
+                users_info.insert(std::pair<std::string, std::string>(name, password));
+                m_lock.unlock();
 
-    //             if (!res)
-    //                 strcpy(m_url, "/log.html");
-    //             else
-    //                 strcpy(m_url, "/registerError.html");
-    //         }
-    //         else
-    //             strcpy(m_url, "/registerError.html");
-    //     }
-    //     //如果是登录，直接判断
-    //     //若浏览器端输入的用户名和密码在表中可以查找到，返回1，否则返回0
-    //     else if (*(p + 1) == '2')
-    //     {
-    //         if (users.find(name) != users.end() && users[name] == password)
-    //             strcpy(m_url, "/welcome.html");
-    //         else
-    //             strcpy(m_url, "/logError.html");
-    //     }
-    // }
+                if (!res)
+                    strcpy(m_url, "/log.html");
+                else
+                    strcpy(m_url, "/registerError.html");
+            } else
+                strcpy(m_url, "/registerError.html");
+        }
+        // 如果是登录，直接判断
+        // 若浏览器端输入的用户名和密码在表中可以查找到，返回1，否则返回0
+        else if (*(p + 1) == '2') {
+            if (users_info.find(name) != users_info.end() && users_info[name] == password)
+                strcpy(m_url, "/welcome.html");
+            else
+                strcpy(m_url, "/logError.html");
+        }
+    }
 
-    // if (*(p + 1) == '0')
-    // {
-    //     char *m_url_real = (char *)malloc(sizeof(char) * 200);
-    //     strcpy(m_url_real, "/register.html");
-    //     strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
+    if (*(p + 1) == '0') {
+        char *m_url_real = (char *)malloc(sizeof(char) * 200);
+        strcpy(m_url_real, "/register.html");
+        strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
 
-    //     free(m_url_real);
-    // }
-    // else if (*(p + 1) == '1')
-    // {
-    //     char *m_url_real = (char *)malloc(sizeof(char) * 200);
-    //     strcpy(m_url_real, "/log.html");
-    //     strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
+        free(m_url_real);
+    }else if (*(p + 1) == '1') {
+        char *m_url_real = (char *)malloc(sizeof(char) * 200);
+        strcpy(m_url_real, "/log.html");
+        strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
 
-    //     free(m_url_real);
-    // }
-    // else if (*(p + 1) == '5')
-    // {
-    //     char *m_url_real = (char *)malloc(sizeof(char) * 200);
-    //     strcpy(m_url_real, "/picture.html");
-    //     strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
+        free(m_url_real);
+    }else if (*(p + 1) == '5') {
+        char *m_url_real = (char *)malloc(sizeof(char) * 200);
+        strcpy(m_url_real, "/picture.html");
+        strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
 
-    //     free(m_url_real);
-    // }
-    // else if (*(p + 1) == '6')
-    // {
-    //     char *m_url_real = (char *)malloc(sizeof(char) * 200);
-    //     strcpy(m_url_real, "/video.html");
-    //     strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
+        free(m_url_real);
+    }else if (*(p + 1) == '6') {
+        char *m_url_real = (char *)malloc(sizeof(char) * 200);
+        strcpy(m_url_real, "/video.html");
+        strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
 
-    //     free(m_url_real);
-    // }
-    // else if (*(p + 1) == '7')
-    // {
-    //     char *m_url_real = (char *)malloc(sizeof(char) * 200);
-    //     strcpy(m_url_real, "/fans.html");
-    //     strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
+        free(m_url_real);
+    }else if (*(p + 1) == '7') {
+        char *m_url_real = (char *)malloc(sizeof(char) * 200);
+        strcpy(m_url_real, "/fans.html");
+        strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
 
-    //     free(m_url_real);
-    // }
-    // else
-    //     strncpy(m_real_file + len, m_url, FILENAME_LEN - len - 1);
+        free(m_url_real);
+    } else {
+        strncpy(m_real_file + len, m_url, FILENAME_LEN - len - 1);
+    }
+    if (stat(m_real_file, &m_file_stat) < 0)
+        return NO_RESOURCE;
 
-    // if (stat(m_real_file, &m_file_stat) < 0)
-    //     return NO_RESOURCE;
+    if (!(m_file_stat.st_mode & S_IROTH))
+        return FORBIDDEN_REQUEST;
 
-    // if (!(m_file_stat.st_mode & S_IROTH))
-    //     return FORBIDDEN_REQUEST;
+    if (S_ISDIR(m_file_stat.st_mode))
+        return BAD_REQUEST;
 
-    // if (S_ISDIR(m_file_stat.st_mode))
-    //     return BAD_REQUEST;
-
-    // int fd = open(m_real_file, O_RDONLY);
-    // m_file_address = (char *)mmap(0, m_file_stat.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
-    // close(fd);
-    // return FILE_REQUEST;
+    int fd = open(m_real_file, O_RDONLY);
+    m_file_address = (char *)mmap(0, m_file_stat.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+    close(fd);
+    return FILE_REQUEST;
 }
 
 // 读取请求的主状态机(报文解析)

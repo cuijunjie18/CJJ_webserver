@@ -143,7 +143,7 @@ void ThreadPool<T>::run(){
                     request->process();
                 }else{
                     request->improv = Event_Finish;
-                    request->timer_flag = 1;
+                    request->timer_flag = TimerDestroy;
                 }
             }else if (request->m_state == Write_State){ // 写
                 if (request->write()){
@@ -151,7 +151,7 @@ void ThreadPool<T>::run(){
                 }
                 else{
                     request->improv = Event_Finish;
-                    request->timer_flag = 1;
+                    request->timer_flag = TimerDestroy;
                 }
             }
         }

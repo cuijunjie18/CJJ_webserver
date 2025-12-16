@@ -82,7 +82,6 @@ public:
     std::string m_databaseName; //使用数据库名
     int m_sql_num;
     int m_sql_port = 3306;  // 目前数据库的端口不重要，直接初始化
-    std::map<std::string,std::string> users_info; // 数据库中用户的数据
  
     //线程池相关
     ThreadPool<HttpConn> *m_pool;
