@@ -1,5 +1,5 @@
 # 设置cmake变量
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+# set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 # message(WARNING "SRC_DIR = ${SRC_DIR}")
 
 # =================================================================================

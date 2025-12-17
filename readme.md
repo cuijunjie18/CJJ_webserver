@@ -61,8 +61,13 @@
 - 编译
   ```shell
   cd CJJ_webserver
-  bash build.sh
+  make clean && make build
   ```
+
+- 单元测试编译
+  ```shell
+  make clean && ENABLE_UT_TEST=ON make build
+  ```  
 
 - 运行
   ```shell
