@@ -18,6 +18,11 @@
 
 ## 环境配置
 
+- 编译工具链安装
+  ```shell
+  sudo apt-get install cmake
+  ```
+
 - 数据库配置验证
   - [MySQL数据库安装](https://github.com/cuijunjie18/my_notebook/blob/master/mysql)  
 
@@ -59,7 +64,7 @@
   bash build.sh
   ```
 
-- 运行()
+- 运行
   ```shell
   ./bin/main
   ```
@@ -77,9 +82,10 @@
 ## 后续规划
 
 - [ ] 完善单元测试
+- [ ] 完成压力测试
 - [ ] 提高webserver的并发度
-- [ ] 解决webserver重复连接问题
 - [ ] 支持个性化启动服务器
+- [ ] 支持docker启动
 
 ## 收获
 
