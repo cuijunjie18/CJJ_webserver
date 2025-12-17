@@ -46,6 +46,30 @@
   INSERT INTO user(username, passwd) VALUES('manager','1234');
   ```
 
+## Get start
+
+- clone本仓库
+  ```shell
+  git clone https://github.com/cuijunjie18/CJJ_webserver.git
+  ```
+
+- 编译
+  ```shell
+  cd CJJ_webserver
+  bash build.sh
+  ```
+
+- 运行()
+  ```shell
+  ./bin/main
+  ```
+  可以在根目录产生的日志查看服务器运行端口
+
+- 浏览器访问
+  ```vim
+  ip:port
+  ```
+
 ## 开发日志
 
 [开发日志](develop_log.md)  
@@ -55,6 +79,7 @@
 - [ ] 完善单元测试
 - [ ] 提高webserver的并发度
 - [ ] 解决webserver重复连接问题
+- [ ] 支持个性化启动服务器
 
 ## 收获
 

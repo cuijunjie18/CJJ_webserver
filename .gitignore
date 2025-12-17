@@ -8,3 +8,6 @@ bin
 
 # tmp
 git_cjj.sh
+
+# log file
+*.log

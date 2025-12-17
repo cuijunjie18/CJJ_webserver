@@ -126,6 +126,7 @@ void HttpConn::unmap() {
     }
 }
 
+// 发送内容给客户端
 bool HttpConn::write() {
     int temp = 0;
 
@@ -336,26 +337,22 @@ bool HttpConn::process_write(HTTP_CODE ret) {
             }
             break;
         case BAD_REQUEST:
-        {
             add_status_line(404, error_404_title);
             add_headers(strlen(error_404_form));
-            if (!add_content(error_404_form))
+            if (!add_content(error_404_form)) {
                 return false;
+            }
             break;
-        }
         case FORBIDDEN_REQUEST:
-        {
             add_status_line(403, error_403_title);
             add_headers(strlen(error_403_form));
-            if (!add_content(error_403_form))
+            if (!add_content(error_403_form)) {
                 return false;
+            }
             break;
-        }
         case FILE_REQUEST:
-        {
             add_status_line(200, ok_200_title);
-            if (m_file_stat.st_size != 0)
-            {
+            if (m_file_stat.st_size != 0) {
                 add_headers(m_file_stat.st_size);
                 m_iv[0].iov_base = m_write_buf;
                 m_iv[0].iov_len = m_write_idx;
@@ -364,15 +361,13 @@ bool HttpConn::process_write(HTTP_CODE ret) {
                 m_iv_count = 2;
                 bytes_to_send = m_write_idx + m_file_stat.st_size;
                 return true;
-            }
-            else
-            {
+            }else {
                 const char *ok_string = "<html><body></body></html>";
                 add_headers(strlen(ok_string));
-                if (!add_content(ok_string))
+                if (!add_content(ok_string)) {
                     return false;
+                }
             }
-        }
         default:
             return false;
     }
