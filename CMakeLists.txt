@@ -6,6 +6,13 @@ project(CJJ_webserver)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# 添加编译指令
+add_compile_options(
+    -g
+    -Wall
+    -Wextra
+)
+
 # 设置源码路径
 set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 

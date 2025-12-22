@@ -37,7 +37,7 @@ public:
     int conn_trig_mode = LT_TRIGMODE;
     int sql_num = 8; 
     int thread_num = 8; 
-    int close_log = Log_Open; // 日志开启状态 
+    int close_log = Log_Close; // 日志开启状态 
     int actor_model = Proactor_Mode; // 服务器并发模式
 };
 

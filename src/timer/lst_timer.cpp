@@ -3,7 +3,7 @@
 /*SortTimerList类定义*/
 SortTimerList::SortTimerList() : head(nullptr), tail(nullptr) {}
 
-SortTimerList::~SortTimerList(){
+SortTimerList::~SortTimerList() {
     UtilTimer* tmp = head;
     while (tmp){
         UtilTimer* p = tmp;
@@ -13,20 +13,20 @@ SortTimerList::~SortTimerList(){
 }
 
 // 双向链表添加节点
-void SortTimerList::add_timer(UtilTimer *timer){
-    if (head == nullptr){
+void SortTimerList::add_timer(UtilTimer *timer) {
+    if (head == nullptr) {
         head = tail = timer;
         return;
     }
-    if (timer->expire < head->expire){
+    if (timer->expire < head->expire) {
         timer->next = head;
         head->prev = timer;
         head = timer;
         return;
     }
     UtilTimer *p = head->next;
-    while (p){
-        if (timer->expire < p->expire){
+    while (p) {
+        if (timer->expire < p->expire) {
             timer->next = p;
             timer->prev = p->prev;
             p->prev->next = timer;
@@ -35,7 +35,7 @@ void SortTimerList::add_timer(UtilTimer *timer){
         }
         p = p->next;
     }
-    if (p == nullptr){
+    if (p == nullptr) {
         timer->prev = tail;
         tail->next = timer;
         tail = timer;
@@ -43,18 +43,18 @@ void SortTimerList::add_timer(UtilTimer *timer){
 }
 
 // 双向链表调整节点的位置
-void SortTimerList::adjust_timer(UtilTimer *timer){
+void SortTimerList::adjust_timer(UtilTimer *timer) {
     if (timer == tail) return; // 尾部不可能再调整
 
     UtilTimer *p = timer->next;
-    if (!p || (timer->expire < p->expire)){
+    if (!p || (timer->expire < p->expire)) {
         return;
     }
-    if (timer == head){
+    if (timer == head) {
         head = head->next;
         head->prev = nullptr;
         add_timer(timer);
-    }else{
+    }else {
         timer->prev->next = timer->next;
         timer->next->prev = timer->prev;
         add_timer(timer);
@@ -62,22 +62,28 @@ void SortTimerList::adjust_timer(UtilTimer *timer){
 }
 
 // 双向链表删除节点
-void SortTimerList::del_timer(UtilTimer *timer){
-    if (timer == head){
+void SortTimerList::del_timer(UtilTimer *timer) {
+    if (timer == head && timer == tail) {
+        delete timer;
+        head = nullptr;
+        tail = nullptr;
+        return;
+    }
+    if (timer == head) {
         head = head->next;
         head->prev = nullptr;
         delete timer;
         return;
     }
-    if (timer == tail){
+    if (timer == tail) {
         tail = tail->prev;
         tail->next = nullptr;
         delete timer;
         return;
     }
     UtilTimer* p = head->next;
-    while (p){
-        if (p == timer){
+    while (p) {
+        if (p == timer) {
             timer->prev->next = timer->next;
             timer->next->prev = timer->prev;
             delete timer;
@@ -89,12 +95,12 @@ void SortTimerList::del_timer(UtilTimer *timer){
 }
 
 // 遍历升序定时器，处理超时的节点
-void SortTimerList::tick(){
+void SortTimerList::tick() {
     if (head == nullptr) return;
     time_t cur_stamp = time(nullptr);
     UtilTimer* p = head;
-    while (p){
-        if (cur_stamp < p->expire){
+    while (p) {
+        if (cur_stamp < p->expire) {
             break;
         }
         p->cb_func(p->user_data);
@@ -104,22 +110,22 @@ void SortTimerList::tick(){
     }
 }
 
-UtilTimer* SortTimerList::get_head(){
+UtilTimer* SortTimerList::get_head() {
     return head;
 }
-UtilTimer* SortTimerList::get_tail(){
+UtilTimer* SortTimerList::get_tail() {
     return tail;
 }
 
 
 /*下面是Utils类的定义*/
 
-void Utils::init(int timeslot){
+void Utils::init(int timeslot) {
     m_TIMESLOT = timeslot;
 }
 
 //对文件描述符设置非阻塞
-int Utils::setnonblocking(int fd){
+int Utils::setnonblocking(int fd) {
     int old_option = fcntl(fd, F_GETFL);
     int new_option = old_option | O_NONBLOCK;
     fcntl(fd, F_SETFL, new_option);
@@ -127,7 +133,7 @@ int Utils::setnonblocking(int fd){
 }
 
 //将内核事件表注册读事件，ET模式，选择开启EPOLLONESHOT
-void Utils::addfd(int epollfd, int fd, bool one_shot, int TRIGMode){
+void Utils::addfd(int epollfd, int fd, bool one_shot, int TRIGMode) {
     epoll_event event;
     event.data.fd = fd;
 
@@ -143,7 +149,7 @@ void Utils::addfd(int epollfd, int fd, bool one_shot, int TRIGMode){
 }
 
 //信号处理函数
-void Utils::sig_handler(int sig){
+void Utils::sig_handler(int sig) {
     //为保证函数的可重入性，保留原来的errno
     int save_errno = errno;
     int msg = sig;
@@ -152,7 +158,7 @@ void Utils::sig_handler(int sig){
 }
 
 //设置信号函数
-void Utils::addsig(int sig, void(handler)(int), bool restart){
+void Utils::addsig(int sig, void(handler)(int), bool restart) {
     struct sigaction sa;
     memset(&sa, '\0', sizeof(sa));
     sa.sa_handler = handler;
@@ -163,12 +169,12 @@ void Utils::addsig(int sig, void(handler)(int), bool restart){
 }
 
 //定时处理任务，重新定时以不断触发SIGALRM信号
-void Utils::timer_handler(){
+void Utils::timer_handler() {
     m_timer_lst.tick();
     alarm(m_TIMESLOT);
 }
 
-void Utils::show_error(int connfd, const char *info){
+void Utils::show_error(int connfd, const char *info) {
     send(connfd, info, strlen(info), 0);
     close(connfd);
 }
