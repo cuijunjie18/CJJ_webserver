@@ -1,0 +1,53 @@
+# Git files
+.git
+.gitignore
+
+# Build artifacts
+build/
+bin/
+*.o
+*.so
+*.a
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Documentation
+*.md
+!README.md
+
+# Docker files (avoid recursive copying)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Test files (optional, comment out if you want to include tests)
+test/
+
+# Debug files
+debug/
+
+# Learning materials
+learning/
+
+# Reference materials
+reference/
+
+# Assets (if not needed in container)
+assets/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp

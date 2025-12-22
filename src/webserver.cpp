@@ -43,9 +43,12 @@ void WebServer::init(
     int sql_num, 
     int thread_num, 
     int close_log, 
-    int actor_model
+    int actor_model,
+    std::string mysql_url,
+    int mysql_port
 )
 {
+    m_mysql_url = mysql_url;
     m_user = user;
     m_passWord = passWord;
     m_databaseName = databaseName;
@@ -55,6 +58,7 @@ void WebServer::init(
     m_listen_trig_mode = listen_trig_mode;
     m_conn_trig_mode = conn_trig_mode;
     m_sql_num = sql_num;
+    m_sql_port = mysql_port;
     m_thread_num = thread_num;
     m_close_log = close_log;
     m_actormodel = actor_model;
@@ -96,7 +100,7 @@ void WebServer::show_users_info() {
 // 数据库连接池初始化
 void WebServer::sql_pool() {
     m_connPool = &ConnectionPool::GetInstance();
-    m_connPool->init("localhost", m_user, m_passWord, m_databaseName, m_sql_port, m_sql_num, m_close_log);
+    m_connPool->init(m_mysql_url, m_user, m_passWord, m_databaseName, m_sql_port, m_sql_num, m_close_log);
 
     initmysql_result(m_connPool);
 }

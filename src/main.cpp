@@ -23,7 +23,9 @@ int main(int argc,char *argv[])
         config.sql_num,
         config.thread_num,
         config.close_log,
-        config.actor_model
+        config.actor_model,
+        config.mysql_url,
+        config.mysql_port
     );
 
     //日志

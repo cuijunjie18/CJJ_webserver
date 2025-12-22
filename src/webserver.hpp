@@ -31,7 +31,8 @@ public:
 
     void init(int port , std::string user, std::string passWord, std::string databaseName,
               int log_write , int opt_linger, int listen_trig_mode, int conn_trig_mode,
-              int sql_num, int thread_num, int close_log, int actor_model);
+              int sql_num, int thread_num, int close_log, int actor_model, 
+              std::string mysql_url = "localhost", int mysql_port = 3306);
 
     // 数据库
     void sql_pool();
@@ -77,11 +78,12 @@ public:
 
     // 数据库相关
     ConnectionPool *m_connPool;
+    std::string m_mysql_url;    //MySQL服务器地址
     std::string m_user;         //登陆数据库用户名
     std::string m_passWord;     //登陆数据库密码
     std::string m_databaseName; //使用数据库名
     int m_sql_num;
-    int m_sql_port = 3306;  // 目前数据库的端口不重要，直接初始化
+    int m_sql_port;             //MySQL端口
  
     //线程池相关
     ThreadPool<HttpConn> *m_pool;

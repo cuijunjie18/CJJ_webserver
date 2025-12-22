@@ -1,5 +1,14 @@
 # CJJ-WebSever
 
+## 目录
+
+[风格描述](#风格描述)  
+[基本组件](#基本组件)  
+[环境配置](#环境配置)  
+[Get start](#get-start)  
+[docker部署](#docker-部署)  
+[开发日志](#开发日志)
+
 ## 风格描述
 
 目前的c++代码风格是偏向于C语言风格，较多使用POSIX接口
@@ -90,7 +99,22 @@
 - [ ] 完成压力测试
 - [ ] 提高webserver的并发度
 - [ ] 支持个性化启动服务器
-- [ ] 支持docker启动
+- [x] 支持docker启动
+
+## Docker 部署
+
+项目现已支持Docker容器化部署！
+
+- 使用docker-compose一键启动
+```bash
+# 使用docker-compose一键启动（包含MySQL数据库）
+docker-compose up -d
+
+# 访问服务
+# 浏览器打开 ip:50001
+```
+
+详细的Docker部署说明请参考：[Docker部署指南](DOCKER_README.md)
 
 ## 收获
 
@@ -109,4 +133,4 @@
 
 baseline: https://github.com/qinguoyi/TinyWebServer.git  
 mysql_cmake: https://github.com/nryeng/hello-mysql-world  
-GTest: https://zhuanlan.zhihu.com/p/693222066  
+GTest: https://zhuanlan.zhihu.com/p/693222066

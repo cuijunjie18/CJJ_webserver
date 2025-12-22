@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: cjj-webserver-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: user_info_db
+      MYSQL_USER: webdev
+      MYSQL_PASSWORD: 12345678
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - webserver-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  webserver:
+    build: .
+    container_name: cjj-webserver
+    ports:
+      - "50001:50001"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - webserver-network
+    volumes:
+      - ./logs:/app/logs
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+
+networks:
+  webserver-network:
+    driver: bridge
