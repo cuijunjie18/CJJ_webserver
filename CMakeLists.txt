@@ -15,15 +15,18 @@ add_compile_options(
 
 # 设置源码路径
 set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
+set(EXAMPLES_DIR ${PROJECT_SOURCE_DIR}/examples)
 
 # 设置源文件
 file(GLOB http_src ${SRC_DIR}/http/*.cpp)
 file(GLOB logger_src ${SRC_DIR}/logger/*.cpp)
 file(GLOB timer_src ${SRC_DIR}/timer/*.cpp)
 file(GLOB CGImysql_src ${SRC_DIR}/CGImysql/*.cpp)
+file(GLOB client_src ${SRC_DIR}/client/*.cpp)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/examples)
 
 # 是否启用测试
 if (ENABLE_UT_TEST)
