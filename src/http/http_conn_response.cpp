@@ -14,8 +14,6 @@ bool HttpConn::add_response(const char *format, ...) {
     m_write_idx += len;
     va_end(arg_list);
 
-    LOG_INFO("request:%s", m_write_buf);
-
     return true;
 }
 

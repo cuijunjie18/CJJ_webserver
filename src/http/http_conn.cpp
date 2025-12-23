@@ -1,4 +1,5 @@
 #include "http/http_conn.hpp"
+#include "utils/common.hpp"
 
 // 静态类成员变量初始化
 int HttpConn::m_epollfd{-1};
@@ -18,7 +19,7 @@ const char *error_500_title = "Internal Error";
 const char *error_500_form = "There was an unusual problem serving the request file.\n";
 
 // 定时器回调函数
-void cb_func(client_data *user_data){
+void cb_func(client_data *user_data) {
     epoll_ctl(Utils::u_epollfd, EPOLL_CTL_DEL, user_data->sockfd, 0);
     assert(user_data);
     close(user_data->sockfd);
@@ -64,7 +65,7 @@ void HttpConn::init(int sockfd,
     m_TRIGMode = TRIGMode;
     m_close_log = close_log;
 
-    addfd(m_epollfd, m_sockfd, false, m_TRIGMode);
+    addfd(m_epollfd, m_sockfd, true, m_TRIGMode);
     m_user_count++;
 
     strcpy(sql_user, user.c_str());
@@ -160,6 +161,7 @@ bool HttpConn::write() {
         }
 
         if (bytes_to_send <= 0) {
+            LOG_INFO("All data send to client");
             unmap();
             modfd(m_epollfd, m_sockfd, EPOLLIN, m_TRIGMode);
 
@@ -292,6 +294,8 @@ HTTP_CODE HttpConn::process_read() {
     HTTP_CODE ret = NO_REQUEST;
     char *text = 0;
 
+    LOG_INFO("Get http request:\n");
+
     while ((m_check_state == CHECK_STATE_CONTENT && line_status == LINE_OK) || ((line_status = parse_line()) == LINE_OK))
     {
         text = get_line();
@@ -371,6 +375,7 @@ bool HttpConn::process_write(HTTP_CODE ret) {
         default:
             return false;
     }
+    LOG_INFO("Server response: %s", m_write_buf);
     m_iv[0].iov_base = m_write_buf;
     m_iv[0].iov_len = m_write_idx;
     m_iv_count = 1;
@@ -387,6 +392,7 @@ void HttpConn::process() {
     }
     bool write_ret = process_write(read_ret);
     if (!write_ret) {
+        LOG_ERROR("Write response failed");
         close_conn();
     }
     modfd(m_epollfd, m_sockfd, EPOLLOUT, m_TRIGMode);

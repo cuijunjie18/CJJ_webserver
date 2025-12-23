@@ -93,14 +93,6 @@
 
 [开发日志](develop_log.md)  
 
-## 后续规划
-
-- [ ] 完善单元测试
-- [ ] 完成压力测试
-- [ ] 提高webserver的并发度(目前测试发现多线程存在问题)
-- [ ] 支持个性化启动服务器
-- [x] 支持docker启动
-
 ## Docker 部署
 
 项目现已支持Docker容器化部署！
@@ -115,6 +107,20 @@ docker-compose up -d
 ```
 
 详细的Docker部署说明请参考：[Docker部署指南](DOCKER_README.md)
+
+## 压力测试
+
+目前的压力测试结果：
+
+![500压测](assets/webbench-500.png)  
+
+## 后续规划
+
+- [ ] 完善单元测试
+- [x] 完成压力测试
+- [ ] 提高webserver的并发度
+- [ ] 支持个性化启动服务器
+- [x] 支持docker启动
 
 ## 收获
 

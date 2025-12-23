@@ -98,7 +98,7 @@ HTTP_CODE HttpConn::parse_headers(char *text) {
         text += strspn(text, " \t");
         m_host = text;
     }else {
-        LOG_INFO("oop!unknow header: %s", text);
+        LOG_WARN("Unknow header: %s", text);
     }
     return NO_REQUEST;
 }

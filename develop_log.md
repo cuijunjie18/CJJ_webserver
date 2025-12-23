@@ -72,3 +72,8 @@
 - 2025.12.22
   - 支持docker一键启动服务器
   - 修复双向链表的删除bug
+
+- 2025.12.23
+  - 发现服务器不支持高并发，添加client测试
+  - 找到阻塞的原因，定时器adjust后会在add_timer死循环，发现adjust_timer的时候忘记设置timer->next = nullptr
+  - 完成压测

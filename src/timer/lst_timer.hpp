@@ -28,18 +28,16 @@
 
 class UtilTimer;
 
-struct client_data
-{
+struct client_data {
     sockaddr_in address;
     int sockfd;
     UtilTimer *timer;
 };
 
 // 定时器类
-class UtilTimer
-{
+class UtilTimer {
 public:
-    UtilTimer() : prev(NULL), next(NULL) {}
+    UtilTimer() : prev(nullptr), next(nullptr) {}
 
 public:
     time_t expire;
@@ -51,8 +49,7 @@ public:
 };
 
 // 定时器容器类
-class SortTimerList
-{
+class SortTimerList {
 public:
     SortTimerList();
     ~SortTimerList();
@@ -69,8 +66,7 @@ private:
     UtilTimer *tail;
 };
 
-class Utils
-{
+class Utils {
 public:
     Utils() {}
     ~Utils() {}
@@ -93,6 +89,8 @@ public:
     void timer_handler();
 
     void show_error(int connfd, const char *info);
+
+    void show_timer_list();
 
 public:
     static int *u_pipefd; // 使用管道传递信号

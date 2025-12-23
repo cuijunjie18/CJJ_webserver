@@ -7,7 +7,6 @@
 WebServer::WebServer() {
     //http_conn类对象
     users = new HttpConn[MAX_FD];
-    active_user_fds.clear();
 
     //root文件夹路径
     char server_path[200];
@@ -71,8 +70,7 @@ void WebServer::initmysql_result(ConnectionPool *connPool) {
     ConnectionRAII mysqlcon(&mysql, connPool);
 
     //在user表中检索username，passwd数据，浏览器端输入
-    if (mysql_query(mysql, "SELECT username,passwd FROM user"))
-    {
+    if (mysql_query(mysql, "SELECT username,passwd FROM user")) {
         LOG_ERROR("SELECT error:%s\n", mysql_error(mysql));
     }
 
@@ -80,8 +78,7 @@ void WebServer::initmysql_result(ConnectionPool *connPool) {
     MYSQL_RES *result = mysql_store_result(mysql);
 
     //从结果集中获取下一行，将对应的用户名和密码，存入map中
-    while (MYSQL_ROW row = mysql_fetch_row(result))
-    {
+    while (MYSQL_ROW row = mysql_fetch_row(result)) {
         std::string temp1(row[0]);
         std::string temp2(row[1]);
         HttpConn::users_info[temp1] = temp2;
@@ -221,10 +218,12 @@ void WebServer::adjust_timer(UtilTimer *timer) {
 void WebServer::deal_timer(UtilTimer *timer, int sockfd) {
     timer->cb_func(&users_timer[sockfd]);
     utils.m_timer_lst.del_timer(timer);
+    LOG_INFO("Close fd %d", users_timer[sockfd].sockfd);
 }
 
 // 读事件处理
 void WebServer::dealwithread(int sockfd) {
+    LOG_INFO("Deal read event from client(%s) fd(%d)", inet_ntoa(users[sockfd].get_address()->sin_addr), sockfd);
     UtilTimer *timer = users_timer[sockfd].timer;
 
     // reactor
@@ -246,8 +245,6 @@ void WebServer::dealwithread(int sockfd) {
         }
     } else { // proactor
         if (users[sockfd].read_once()) {
-            LOG_INFO("deal with the client(%s)", inet_ntoa(users[sockfd].get_address()->sin_addr));
-
             // 若监测到读事件，将该事件放入请求队列
             m_pool->append_p(users + sockfd);
             adjust_timer(timer);
@@ -260,6 +257,7 @@ void WebServer::dealwithread(int sockfd) {
 
 // 写事件处理
 void WebServer::dealwithwrite(int sockfd) {
+    LOG_INFO("Deal write event from client(%s) fd(%d)", inet_ntoa(users[sockfd].get_address()->sin_addr), sockfd);
     UtilTimer *timer = users_timer[sockfd].timer;
 
     // reactor
@@ -281,7 +279,6 @@ void WebServer::dealwithwrite(int sockfd) {
         }
     } else { // proactor
         if (users[sockfd].write()) {
-            LOG_INFO("deal with the client(%s)", inet_ntoa(users[sockfd].get_address()->sin_addr));
             adjust_timer(timer);
         }
         else {
@@ -306,7 +303,7 @@ bool WebServer::dealclientdata() {
             return false;
         }
         timer(connfd, client_address);
-        active_user_fds.insert(connfd);
+        LOG_INFO("New connection accepted fd(%d)", connfd);
     }
 
     else { // ET触发一次读完
@@ -322,7 +319,7 @@ bool WebServer::dealclientdata() {
                 break;
             }
             timer(connfd, client_address);
-            active_user_fds.insert(connfd);
+            LOG_INFO("New connection accepted fd:(%d)", connfd);
         }
         return false;
     }
@@ -371,12 +368,12 @@ void WebServer::eventLoop() {
             if (act_fd == m_listenfd) { // 处理新http连接请求
                 bool ret = dealclientdata();
                 if (ret == false) {
-                    // TODO: Add log
+                    LOG_ERROR("Dealclientdata failed");
                 }
             } else if ((act_fd == m_pipefd[Read_End]) && (act_events & EPOLLIN)) { // 处理本地信号
                 bool ret = dealwithsignal(timeout, stop_server);
                 if (ret == false) {
-                    // TODO: Add log
+                    LOG_ERROR("Dealwithsignal failed");
                 }
             } else if (act_events & (EPOLLERR | EPOLLHUP | EPOLLRDHUP)) { // 客户端关闭连接/错误
                 UtilTimer* timer = users_timer[act_fd].timer;

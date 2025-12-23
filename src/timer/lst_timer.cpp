@@ -14,6 +14,7 @@ SortTimerList::~SortTimerList() {
 
 // 双向链表添加节点
 void SortTimerList::add_timer(UtilTimer *timer) {
+    if (!timer) return;  // 修复：检查timer是否为空
     if (head == nullptr) {
         head = tail = timer;
         return;
@@ -29,7 +30,6 @@ void SortTimerList::add_timer(UtilTimer *timer) {
         if (timer->expire < p->expire) {
             timer->next = p;
             timer->prev = p->prev;
-            p->prev->next = timer;
             p->prev = timer;
             break;
         }
@@ -37,32 +37,47 @@ void SortTimerList::add_timer(UtilTimer *timer) {
     }
     if (p == nullptr) {
         timer->prev = tail;
-        tail->next = timer;
         tail = timer;
     }
 }
 
 // 双向链表调整节点的位置
 void SortTimerList::adjust_timer(UtilTimer *timer) {
+    if (!timer) return;  // 修复：检查timer是否为空
     if (timer == tail) return; // 尾部不可能再调整
 
     UtilTimer *p = timer->next;
     if (!p || (timer->expire < p->expire)) {
         return;
     }
+    
+    // 先断开timer与链表的连接，避免循环引用
     if (timer == head) {
         head = head->next;
-        head->prev = nullptr;
-        add_timer(timer);
-    }else {
-        timer->prev->next = timer->next;
-        timer->next->prev = timer->prev;
-        add_timer(timer);
+        if (head) {
+            head->prev = nullptr;  // 修复：检查head是否为空
+        }
+        timer->next = nullptr;
+        timer->prev = nullptr;  // 修复：也要置空prev指针
+    } else {
+        if (timer->prev) {
+            timer->prev->next = timer->next;
+        }
+        if (timer->next) {
+            timer->next->prev = timer->prev;
+        }
+        timer->next = nullptr;
+        timer->prev = nullptr;  // 修复：断开所有连接
     }
+    
+    // 重新插入timer
+    add_timer(timer);
 }
 
 // 双向链表删除节点
 void SortTimerList::del_timer(UtilTimer *timer) {
+    if (!timer) return;  // 修复：检查timer是否为空
+    
     if (timer == head && timer == tail) {
         delete timer;
         head = nullptr;
@@ -71,27 +86,21 @@ void SortTimerList::del_timer(UtilTimer *timer) {
     }
     if (timer == head) {
         head = head->next;
-        head->prev = nullptr;
         delete timer;
         return;
     }
     if (timer == tail) {
         tail = tail->prev;
-        tail->next = nullptr;
         delete timer;
         return;
     }
-    UtilTimer* p = head->next;
-    while (p) {
-        if (p == timer) {
-            timer->prev->next = timer->next;
-            timer->next->prev = timer->prev;
-            delete timer;
-            return;
-        }
-        p = p->next;
+    
+    if (timer->prev && timer->next) {
+        timer->prev->next = timer->next;
+        timer->next->prev = timer->prev;
+        delete timer;
+        return;
     }
-    std::fprintf(stdout,"utiltimer is not in sorttimerlist!\n");
 }
 
 // 遍历升序定时器，处理超时的节点
@@ -105,6 +114,9 @@ void SortTimerList::tick() {
         }
         p->cb_func(p->user_data);
         head = p->next;
+        if (head) {
+            head->prev = nullptr;  // 修复：设置新head的prev为nullptr
+        }
         delete p;
         p = head;
     }
@@ -179,6 +191,14 @@ void Utils::show_error(int connfd, const char *info) {
     close(connfd);
 }
 
+void Utils::show_timer_list() {
+    UtilTimer* tmp = m_timer_lst.get_head();
+    std::fprintf(stdout, "Current Timer List:\n");
+    while (tmp) {
+        std::fprintf(stdout, "Timer expire time: %ld\n", tmp->expire);
+        tmp = tmp->next;
+    }
+}
+
 int *Utils::u_pipefd = 0;
 int Utils::u_epollfd = 0;
-

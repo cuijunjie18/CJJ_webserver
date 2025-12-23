@@ -1,6 +1,7 @@
 #ifndef EPOLL_UTILS_HPP
 #define EPOLL_UTILS_HPP
 
+#include "utils/common.hpp"
 #include <fcntl.h>
 #include <sys/epoll.h>
 #include <unistd.h>
@@ -44,7 +45,7 @@ inline void modfd(int epollfd, int fd, int ev, int TRIGMode){
     epoll_event event;
     event.data.fd = fd;
 
-    if (TRIGMode == 1)
+    if (TRIGMode == ET_TRIGMODE)
         event.events = ev | EPOLLET | EPOLLONESHOT | EPOLLRDHUP;
     else
         event.events = ev | EPOLLONESHOT | EPOLLRDHUP;
