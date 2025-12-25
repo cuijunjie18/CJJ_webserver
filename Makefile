@@ -13,5 +13,8 @@ build:
 	cmake -B build $(CMAKE_ARGS)
 	cmake --build build -j
 
+webbench:
+	cd WebBench && $(MAKE) webbench
+
 clean:
 	rm -rf build

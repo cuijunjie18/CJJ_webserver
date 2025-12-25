@@ -64,7 +64,7 @@
 
 - clone本仓库
   ```shell
-  git clone https://github.com/cuijunjie18/CJJ_webserver.git
+  git clone --recurse-submodules https://github.com/cuijunjie18/CJJ_webserver.git
   ```
 
 - 编译
@@ -110,7 +110,14 @@ docker-compose up -d
 
 ## 压力测试
 
-目前的压力测试结果：
+- 本地测试
+  ```shell
+  cd CJJ_webserver
+  make webbench
+  ./WebBench/webbench # 根据使用说明使用即可
+  ```
+
+- 目前的压力测试结果
 
 ![500压测](assets/webbench-500.png)  
 
